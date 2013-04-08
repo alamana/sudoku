@@ -47,9 +47,9 @@ public class Validator {
 			String line = in.nextLine();
 			for (int j = 0; j < NUM_NUMBERS; j++) {
 				grid[i][j] = line.charAt(j);
-				System.out.print(line.charAt(j));
+				//System.out.print(line.charAt(j));
 			}
-			System.out.println("");
+			//System.out.println("");
 		}
 
 		// check rows
