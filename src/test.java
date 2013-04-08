@@ -8,7 +8,7 @@ public class test {
 		SimpleSolver s = new SimpleSolver();
 		s.solve("superEasy");
 		String file = s.write();
-		System.out.println(v.check(file));
+		//System.out.println("Valid = " + v.check(file));
 
 	}
 

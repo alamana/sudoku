@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class SimpleSolver {
@@ -53,22 +54,63 @@ public class SimpleSolver {
 		// System.out.println("Starting solve...");
 		// print();
 		// while (!isSolved()) {
-		simpleRowCheck();
-		simpleColumnCheck();
+		// simpleRowCheck();
+		// simpleColumnCheck();
+		simpleBlockCheck();
 		// }
 		System.out.println("Done solving...");
 		print();
 
 	}
 
+	// look at each cell and remove what's already in its block
+	void simpleBlockCheck() {
+
+		int row, col;
+		row = 0;
+		for (int z = 0; z < N; z++) {
+			ArrayList<Cell> zeros = new ArrayList<Cell>();
+			int blockVals[] = new int[NUM_NUMBERS];
+			row = 3 * (z / 3);
+			for (int i = 1; i <= 3; i++) {
+				col = 3 * (z % 3);
+				for (int j = 1; j <= 3; j++) {
+					Cell current = grid[row][col];
+					// compare value to everything else in cell if we have a 0
+					if (current.value == 0) {
+						zeros.add(current);
+					} else {
+						blockVals[current.value - 1] = current.value;
+					}
+					col++;
+				}
+				row++;
+			}
+			for (int i = 0; i < zeros.size(); i++) {
+				Cell current = zeros.get(i);
+				for (int n = 0; n < NUM_NUMBERS; n++) {
+					if (blockVals[n] != 0) {
+						current.possibles[n] = 0;
+						current.size--;
+					}
+				}
+				if (current.size == 1) {
+					for (int k = 0; k < NUM_NUMBERS; k++) {
+						int first_nonzero = current.possibles[k];
+						if (first_nonzero != 0) {
+							current.value = first_nonzero;
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	// look at each cell and then remove what's already in the column
 	void simpleColumnCheck() {
 		transpose();
-		System.out.println("After transpose...");
-		print();
 		simpleRowCheck();
-		System.out.println("After simpleRowCheck");
-		print();
 		transpose();
 	}
 
@@ -117,11 +159,17 @@ public class SimpleSolver {
 	}
 
 	void print() {
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				System.out.print(grid[i][j].value);
+		for (int i = 1; i <= N; i++) {
+			for (int j = 1; j <= N; j++) {
+				System.out.print(grid[i - 1][j - 1].value);
+				// if (j % 3 == 0 && j != N){
+				// System.out.print("|");
+				// }
 			}
 			System.out.println("");
+			// if (i % 3 == 0 && i != N){
+			// System.out.println("---|---|---");
+			// }
 		}
 	}
 
