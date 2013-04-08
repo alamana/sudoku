@@ -5,6 +5,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class SimpleSolver {
 
@@ -47,20 +49,94 @@ public class SimpleSolver {
 				} else {
 					int value = (int) (cell - '0');
 					grid[i][j].value = value;
-					grid[i][j].size = 0; // no more possibilities for that cell
+					grid[i][j].size = 0; // no more possibilities for that
+											// cell
 				}
 			}
 		}
-		// System.out.println("Starting solve...");
-		// print();
-		// while (!isSolved()) {
-		// simpleRowCheck();
-		// simpleColumnCheck();
-		simpleBlockCheck();
-		// }
+		int counter = 0;
+		while (!isSolved() && counter < 50) {
+			simpleRowCheck();
+			simpleColumnCheck();
+			simpleBlockCheck();
+			nakedPair(); // don't know if this works
+			counter++;
+		}
 		System.out.println("Done solving...");
 		print();
+		for (int i = 0; i < N; i++) {
+			System.out.println(grid[8][i].toString());
+		}
 
+	}
+
+	void nakedPair() {
+		nakedRowPair();
+		//nakedColumnPair();
+	}
+
+	void nakedColumnPair() {
+		transpose();
+		nakedRowPair();
+		transpose();
+	}
+
+	void nakedRowPair() {
+		ArrayList<TreeSet<Integer>> sets = new ArrayList<TreeSet<Integer>>();
+		for (int i = 0; i < N; i++) {
+			sets.clear();
+			// creates a set for each possibles[j]
+			for (int j = 0; j < N; j++) {
+				TreeSet<Integer> temp = new TreeSet<Integer>();
+				for (int z = 0; z < NUM_NUMBERS; z++) {
+					temp.add(grid[i][j].possibles[z]);
+				}
+				temp.remove(0); // we don't care about 0
+				sets.add(temp);
+			}
+			// see if any of the sets are the same
+			ArrayList<TreeSet<Integer>> groups = new ArrayList<TreeSet<Integer>>();
+			ArrayList<TreeSet<Integer>> places = new ArrayList<TreeSet<Integer>>();
+			for (int a = 0; a < sets.size(); a++) {
+				TreeSet<Integer> temp = new TreeSet<Integer>();
+				int counter = 1;
+				temp.add(a);
+				for (int b = 0; b < sets.size(); b++) {
+					if (a != b) {
+						TreeSet<Integer> setA = sets.get(a);
+						TreeSet<Integer> setB = sets.get(b);
+						if (setA.containsAll(setB) && setB.containsAll(setA)) {
+							temp.add(b);
+							counter++;
+						}
+					}
+				}
+				if (counter == sets.get(a).size()) {
+					groups.add(sets.get(a));
+					places.add(temp);
+				}
+			}
+			// we now have sets in groups
+			for (int a = 0; a < groups.size(); a++) {
+				TreeSet<Integer> temp = groups.get(a);
+				TreeSet<Integer> correspondingPlaces = places.get(a);
+				// remove the values in temp from every cell in this row
+				for (int q = 0; q < temp.size(); q++) {
+					int first = temp.pollFirst();
+					for (int j = 0; j < N; j++) {
+						if (!correspondingPlaces.contains(j)) {
+							System.out.println("Trying to remove " + first
+									+ " from (" + i + ", " + j + ")");
+							if (grid[i][j].possibles[first - 1] != 0) {
+								grid[i][j].possibles[first - 1] = 0;
+								if (grid[i][j].size != 0)
+									grid[i][j].size--;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	// look at each cell and remove what's already in its block
@@ -90,8 +166,10 @@ public class SimpleSolver {
 				Cell current = zeros.get(i);
 				for (int n = 0; n < NUM_NUMBERS; n++) {
 					if (blockVals[n] != 0) {
-						current.possibles[n] = 0;
-						current.size--;
+						if (current.possibles[n] != 0) {
+							current.possibles[n] = 0;
+							current.size--;
+						}
 					}
 				}
 				if (current.size == 1) {
@@ -162,14 +240,8 @@ public class SimpleSolver {
 		for (int i = 1; i <= N; i++) {
 			for (int j = 1; j <= N; j++) {
 				System.out.print(grid[i - 1][j - 1].value);
-				// if (j % 3 == 0 && j != N){
-				// System.out.print("|");
-				// }
 			}
 			System.out.println("");
-			// if (i % 3 == 0 && i != N){
-			// System.out.println("---|---|---");
-			// }
 		}
 	}
 

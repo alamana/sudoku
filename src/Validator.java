@@ -47,9 +47,9 @@ public class Validator {
 			String line = in.nextLine();
 			for (int j = 0; j < NUM_NUMBERS; j++) {
 				grid[i][j] = line.charAt(j);
-				//System.out.print(line.charAt(j));
+				// System.out.print(line.charAt(j));
 			}
-			//System.out.println("");
+			// System.out.println("");
 		}
 
 		// check rows
@@ -59,6 +59,8 @@ public class Validator {
 				char cell = grid[i][j];
 				int index = (int) (cell - '1');
 				// System.out.println("j=" + j + "   " + cell + " @ " + index);
+				if (index > 9 || index < 1)
+					return false;
 				if (numbers[index] != cell)
 					return false;
 				numbers[index] = '0';
