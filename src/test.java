@@ -1,4 +1,3 @@
-
 public class test {
 
 	/**
@@ -6,7 +5,11 @@ public class test {
 	 */
 	public static void main(String[] args) {
 		Validator v = new Validator();
-		System.out.println(v.check("solved1"));
+		SimpleSolver s = new SimpleSolver();
+		s.solve("superEasy");
+		String file = s.write();
+		System.out.println(v.check(file));
+
 	}
 
 }
