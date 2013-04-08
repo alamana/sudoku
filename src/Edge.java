@@ -7,6 +7,7 @@ public class Edge {
 		n2 = b;
 	}
 
+	//Edges are equal if n1 and n2 are the same for both
 	public boolean equals(Object o) {
 		boolean ret = false;
 		Edge temp = (Edge) o;
