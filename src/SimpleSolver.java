@@ -90,13 +90,16 @@ public class SimpleSolver {
 			for (int col = 0; col < N; col++) {
 				int cellVal = grid[row][col].value;
 				if (cellVal == 0) {
-					for (int j = 0; j < N; j++) {
+					for (int j = 0; j < N; j++) { // look at the other cells in
+													// the row
 						if (j == col)
 							continue; // no need to look at current cell
 						int val = grid[row][j].value;
 						if (val != 0) {
-							grid[row][col].possibles[val - 1] = 0;
-							grid[row][col].size--;
+							if (grid[row][col].possibles[val - 1] != 0) {
+								grid[row][col].possibles[val - 1] = 0;
+								grid[row][col].size--;
+							}
 						}
 					}
 					if (grid[row][col].size == 1) {
