@@ -54,34 +54,42 @@ public class SimpleSolver {
 				}
 			}
 		}
-		int counter = 0;
-		while (!isSolved() && counter < 50) {
-			simpleRowCheck();
-			simpleColumnCheck();
-			simpleBlockCheck();
-			nakedPair(); // don't know if this works
-			counter++;
+		// easy cells
+		boolean changed = true;
+		while (!isSolved() && changed) {
+			boolean c1 = simpleRowCheck();
+			boolean c2 = simpleColumnCheck();
+			boolean c3 = simpleBlockCheck();
+			boolean c4 = nakedPair(); // don't know if this works
+			changed = c1 || c2 || c3 || c4;
 		}
+
+		Validator v = new Validator();
+		//
+
 		System.out.println("Done solving...");
 		print();
-		for (int i = 0; i < N; i++) {
-			System.out.println(grid[8][i].toString());
-		}
+		// for (int i = 0; i < N; i++) {
+		// System.out.println(grid[8][i].toString());
+		// }
 
 	}
 
-	void nakedPair() {
-		nakedRowPair();
-		//nakedColumnPair();
+	boolean nakedPair() {
+		boolean c1 = nakedRowPair();
+		boolean c2 = nakedColumnPair();
+		return (c2 || c1);
 	}
 
-	void nakedColumnPair() {
+	boolean nakedColumnPair() {
 		transpose();
-		nakedRowPair();
+		boolean ret = nakedRowPair();
 		transpose();
+		return ret;
 	}
 
-	void nakedRowPair() {
+	boolean nakedRowPair() {
+		boolean ret = false;
 		ArrayList<TreeSet<Integer>> sets = new ArrayList<TreeSet<Integer>>();
 		for (int i = 0; i < N; i++) {
 			sets.clear();
@@ -125,8 +133,8 @@ public class SimpleSolver {
 					int first = temp.pollFirst();
 					for (int j = 0; j < N; j++) {
 						if (!correspondingPlaces.contains(j)) {
-							System.out.println("Trying to remove " + first
-									+ " from (" + i + ", " + j + ")");
+							// System.out.println("Trying to remove " + first
+							// + " from (" + i + ", " + j + ")");
 							if (grid[i][j].possibles[first - 1] != 0) {
 								grid[i][j].possibles[first - 1] = 0;
 								if (grid[i][j].size != 0)
@@ -137,11 +145,12 @@ public class SimpleSolver {
 				}
 			}
 		}
+		return ret;
 	}
 
 	// look at each cell and remove what's already in its block
-	void simpleBlockCheck() {
-
+	boolean simpleBlockCheck() {
+		boolean ret = false;
 		int row, col;
 		row = 0;
 		for (int z = 0; z < N; z++) {
@@ -176,6 +185,7 @@ public class SimpleSolver {
 					for (int k = 0; k < NUM_NUMBERS; k++) {
 						int first_nonzero = current.possibles[k];
 						if (first_nonzero != 0) {
+							ret = true;
 							current.value = first_nonzero;
 							break;
 						}
@@ -183,13 +193,15 @@ public class SimpleSolver {
 				}
 			}
 		}
+		return ret;
 	}
 
 	// look at each cell and then remove what's already in the column
-	void simpleColumnCheck() {
+	boolean simpleColumnCheck() {
 		transpose();
-		simpleRowCheck();
+		boolean ret = simpleRowCheck();
 		transpose();
+		return ret;
 	}
 
 	void transpose() {
@@ -205,7 +217,8 @@ public class SimpleSolver {
 	}
 
 	// look at cell and then remove what's already in the row
-	void simpleRowCheck() {
+	boolean simpleRowCheck() {
+		boolean ret = false;
 		for (int row = 0; row < N; row++) {
 			for (int col = 0; col < N; col++) {
 				int cellVal = grid[row][col].value;
@@ -226,6 +239,7 @@ public class SimpleSolver {
 						for (int k = 0; k < NUM_NUMBERS; k++) {
 							int first_nonzero = grid[row][col].possibles[k];
 							if (first_nonzero != 0) {
+								ret = true;
 								grid[row][col].value = first_nonzero;
 								break;
 							}
@@ -234,6 +248,7 @@ public class SimpleSolver {
 				}
 			}
 		}
+		return ret;
 	}
 
 	void print() {

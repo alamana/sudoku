@@ -104,4 +104,61 @@ public class Validator {
 		return true;
 	}
 
+	boolean validate(Cell[][] grid) {
+		// check rows
+		for (int i = 0; i < NUM_NUMBERS; i++) {
+			fill();
+			for (int j = 0; j < NUM_NUMBERS; j++) {
+				int cell = grid[i][j].value;
+				int index = cell - 1;
+				if (index == -1)
+					continue;
+				// System.out.println("j=" + j + "   " + cell + " @ " + index);
+				if (index > 8 || index < 0)
+					return false;
+				if ((numbers[index] - '0') != cell)
+					return false;
+				numbers[index] = '0';
+			}
+		}
+
+		// check columns
+		for (int j = 0; j < NUM_NUMBERS; j++) {
+			fill();
+			for (int i = 0; i < NUM_NUMBERS; i++) {
+				int cell = grid[i][j].value;
+				int index = cell - 1;
+				if (index == -1)
+					continue;
+				if ((numbers[index] - '0') != cell)
+					return false;
+				numbers[index] = '0';
+			}
+		}
+
+		// check boxes
+		int row, col;
+		row = 0;
+		for (int z = 0; z < 9; z++) {
+			fill();
+			row = 3 * (z / 3);
+			for (int i = 1; i <= 3; i++) {
+				col = 3 * (z % 3);
+				for (int j = 1; j <= 3; j++) {
+					int cell = grid[row][col].value;
+					int index = cell - 1;
+					if (index == -1)
+						continue;
+					if ((numbers[index] - '0') != cell)
+						return false;
+					numbers[index] = '0';
+					// System.out.print(grid[row][col]);
+					col++;
+				}
+				// System.out.print("\n");
+				row++;
+			}
+		}
+		return true;
+	}
 }
