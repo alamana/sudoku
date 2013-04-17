@@ -65,7 +65,7 @@ public class SimpleSolver {
 		}
 
 		Validator v = new Validator();
-		//
+		// 
 
 		System.out.println("Done solving...");
 		print();
