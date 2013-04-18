@@ -9,7 +9,7 @@ public class Group extends ArrayList<Cell> {
 	public Group() {
 		super();
 		type = "";
-		groupVals = new boolean[N];
+		groupVals = new boolean[N]; // initializes to false
 	}
 
 	public boolean add(Cell c) {
@@ -36,7 +36,7 @@ public class Group extends ArrayList<Cell> {
 		return true;
 	}
 
-	public boolean valid(int n) {
-		return groupVals[n - 1];
+	public boolean valid(int n) { // returns true if value n is not in the group
+		return !groupVals[n - 1];
 	}
 }
