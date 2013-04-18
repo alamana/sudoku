@@ -97,7 +97,7 @@ public class SimpleSolver {
 				break;
 		}
 		if (firstZero != null) {
-			move.cellLoc = row * 100 + col;
+			move.loc = row * 100 + col;
 			// check to see what else is in the rows, columns, and blocks
 			int nextVal = 0;
 			for (int i = 0; i < firstZero.possibles.length; i++) {
@@ -245,7 +245,7 @@ public class SimpleSolver {
 							// add move to stack
 							Move temp = new Move();
 							temp.guess = false;
-							temp.cellLoc = row * 100 + col;
+							temp.loc = row * 100 + col;
 							temp.value = first_nonzero;
 							moves.push(temp);
 							break;
@@ -306,7 +306,7 @@ public class SimpleSolver {
 								// add move to stack
 								Move temp = new Move();
 								temp.guess = false;
-								temp.cellLoc = row * 100 + col;
+								temp.loc = row * 100 + col;
 								temp.value = first_nonzero;
 								moves.push(temp);
 								break;

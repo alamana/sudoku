@@ -1,13 +1,18 @@
+import java.util.ArrayList;
+
 public class Cell {
 
-	int NUM_NUMBERS = 9;
+	public int NUM_NUMBERS = 9;
 
-	int possibles[];
-	int size;
-	int value;
-	boolean empty;
+	public int possibles[];
+	public int size;
+	public int value;
+	public int name;
+	public boolean empty;
+	public ArrayList<Group> groups;
 
 	Cell() {
+		name = 0;
 		empty = true;
 		value = 0;
 		size = NUM_NUMBERS;
@@ -15,6 +20,14 @@ public class Cell {
 		for (int i = 0; i < NUM_NUMBERS; i++) {
 			possibles[i] = i + 1;
 		}
+		groups = new ArrayList<Group>();
+	}
+
+	@Override
+	public boolean equals(Object o) { // two cells are equal if they have the
+										// same name
+		Cell c = (Cell) o;
+		return (this.name == c.name);
 	}
 
 	@Override
