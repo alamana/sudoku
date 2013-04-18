@@ -5,8 +5,10 @@ public class Cell {
 	int possibles[];
 	int size;
 	int value;
+	boolean empty;
 
 	Cell() {
+		empty = true;
 		value = 0;
 		size = NUM_NUMBERS;
 		possibles = new int[NUM_NUMBERS];

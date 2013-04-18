@@ -5,7 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 
 public class SimpleSolver {
@@ -14,13 +14,17 @@ public class SimpleSolver {
 	int N = 9; // NxN dimension. Should equal NUM_NUMBERS
 
 	Cell grid[][];
+	Stack<Move> moves;
+	Validator v;
 
 	SimpleSolver() {
+		moves = new Stack<Move>();
 	}
 
 	String filename;
 
 	void solve(String filename) {
+		moves.clear();
 		this.filename = filename;
 		grid = new Cell[N][N];
 		// initialize grid[][][k]
@@ -54,18 +58,17 @@ public class SimpleSolver {
 				}
 			}
 		}
-		// easy cells
-		boolean changed = true;
-		while (!isSolved() && changed) {
-			boolean c1 = simpleRowCheck();
-			boolean c2 = simpleColumnCheck();
-			boolean c3 = simpleBlockCheck();
-			boolean c4 = nakedPair(); // don't know if this works
-			changed = c1 || c2 || c3 || c4;
+		int counter = 0;
+		while (!isSolved() && counter < 25) {
+			fillEasyCells(); // exits when there are no more easy fills
+			// make guess
+			makeGuess();
+			// print();
+			// System.out.println("");
+			// System.out.println("------------------------------");
+			counter++;
 		}
-
-		Validator v = new Validator();
-		// 
+		//
 
 		System.out.println("Done solving...");
 		print();
@@ -73,6 +76,57 @@ public class SimpleSolver {
 		// System.out.println(grid[8][i].toString());
 		// }
 
+	}
+
+	public void makeGuess() {
+		Move move = new Move();
+		move.guess = true;
+		// find first zero cell
+		Cell firstZero = null;
+		int row = 0, col = 0;
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (grid[i][j].value == 0) {
+					firstZero = grid[i][j];
+					row = i;
+					col = j;
+					break;
+				}
+			}
+			if (firstZero != null)
+				break;
+		}
+		if (firstZero != null) {
+			move.cellLoc = row * 100 + col;
+			// check to see what else is in the rows, columns, and blocks
+			int nextVal = 0;
+			for (int i = 0; i < firstZero.possibles.length; i++) {
+				if (firstZero.possibles[i] != 0) {
+					nextVal = firstZero.possibles[i];
+					break;
+				}
+			}
+			System.out.println("nonzeroval = " + nextVal);
+			move.value = nextVal;
+			// make move
+			moves.push(move);
+			firstZero.value = nextVal;
+			firstZero.empty = false;
+		} else {
+			System.out.println("It's NULL");
+		}
+	}
+
+	public void fillEasyCells() {
+		boolean changed = true;
+		while (!isSolved() && changed) {
+			boolean c1 = simpleRowCheck();
+			boolean c2 = simpleColumnCheck();
+			boolean c3 = simpleBlockCheck();
+			// boolean c4 = nakedPair(); // don't know if this works
+			boolean c4 = false;
+			changed = c1 || c2 || c3 || c4;
+		}
 	}
 
 	boolean nakedPair() {
@@ -151,7 +205,7 @@ public class SimpleSolver {
 	// look at each cell and remove what's already in its block
 	boolean simpleBlockCheck() {
 		boolean ret = false;
-		int row, col;
+		int row, col = 0;
 		row = 0;
 		for (int z = 0; z < N; z++) {
 			ArrayList<Cell> zeros = new ArrayList<Cell>();
@@ -187,6 +241,13 @@ public class SimpleSolver {
 						if (first_nonzero != 0) {
 							ret = true;
 							current.value = first_nonzero;
+							current.empty = false;
+							// add move to stack
+							Move temp = new Move();
+							temp.guess = false;
+							temp.cellLoc = row * 100 + col;
+							temp.value = first_nonzero;
+							moves.push(temp);
 							break;
 						}
 					}
@@ -241,6 +302,13 @@ public class SimpleSolver {
 							if (first_nonzero != 0) {
 								ret = true;
 								grid[row][col].value = first_nonzero;
+								grid[row][col].empty = false;
+								// add move to stack
+								Move temp = new Move();
+								temp.guess = false;
+								temp.cellLoc = row * 100 + col;
+								temp.value = first_nonzero;
+								moves.push(temp);
 								break;
 							}
 						}
