@@ -22,7 +22,7 @@ public class Group extends ArrayList<Cell> {
 		return false;
 	}
 
-	public boolean valid() {
+	public boolean valid() { // returns true if the group doesn't contain any repeat values
 
 		int possibles[] = new int[N]; // all 0
 
@@ -31,7 +31,7 @@ public class Group extends ArrayList<Cell> {
 			if (possibles[val - 1] != 0)
 				return false;
 			else
-				possibles[val - 1] = val;
+				possibles[val - 1] = 1;
 		}
 		return true;
 	}
