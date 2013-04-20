@@ -14,7 +14,8 @@ public class Group extends ArrayList<Cell> {
 
 	public boolean add(Cell c) {
 		int val = c.value;
-		groupVals[val - 1] = true;
+		if (val != 0)
+			groupVals[val - 1] = true;
 		super.add(c);
 		return true;
 	}
@@ -46,5 +47,14 @@ public class Group extends ArrayList<Cell> {
 
 	public boolean valid(int n) { // returns true if value n is not in the group
 		return !groupVals[n - 1];
+	}
+
+	@Override
+	public String toString() {
+		String ret = type + ": ";
+		for (int i = 0; i < this.size(); i++){
+			ret += "(" + this.get(i).name + ", " + this.get(i).value + ") ";
+		}
+		return ret;
 	}
 }

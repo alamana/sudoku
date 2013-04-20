@@ -19,12 +19,40 @@ public class Solver {
 	}
 
 	public void solve() {
-		fillEasyCells();
-		
+		for (int i = 0; i < 1; i++)
+			fillEasyCells();
+
 	}
-	
-	public void fillEasyCells(){
-		
+
+	public void fillEasyCells() {
+		// look at each group and remove a its values from every cell in the
+		// group
+		for (Group g : groups) {
+			System.out.println(g);
+			for (int i = 0; i < g.size(); i++) { // choose a cell
+				Cell a = g.get(i);
+				if (!a.empty)
+					continue;
+				for (int j = 0; j < g.groupVals.length && a.empty; j++) {
+					if (g.groupVals[j]) {
+						a.removePossible(j + 1);
+					}
+				}
+				// for (int j = 0; j < g.size() && a.empty; j++) { // compare
+				// every
+				// // other cell to
+				// // it if a is
+				// // empty
+				// Cell b = g.get(j);
+				// if (a.equals(b) || b.empty) { // no need to look at empty
+				// cells or at
+				// // oneself
+				// continue;
+				// }
+				// a.removePossible(b.value);
+				// }
+			}
+		}
 	}
 
 	public boolean validGrid() {
@@ -61,6 +89,10 @@ public class Solver {
 				if (0 < val && val <= N) {
 					grid[i][j].value = val;
 					grid[i][j].empty = false;
+					for (int k = 0; k < grid[i][j].groups.size(); k++) {
+						Group g = grid[i][j].groups.get(k);
+						g.groupVals[grid[i][j].value - 1] = true;
+					}
 				}
 			}
 		}
@@ -103,6 +135,7 @@ public class Solver {
 			for (int j = 0; j < N; j++) { // add each cell in the row to the
 											// group
 				g.add(grid[i][j]);
+				grid[i][j].groups.add(g);
 			}
 			groups.add(g);
 		}
@@ -113,6 +146,7 @@ public class Solver {
 			g.type = "col";
 			for (int i = 0; i < N; i++) {
 				g.add(grid[i][j]);
+				grid[i][j].groups.add(g);
 			}
 			groups.add(g);
 		}
@@ -123,10 +157,12 @@ public class Solver {
 			Group g = new Group();
 			g.type = "block";
 			row = 3 * (z / 3);
-			col = 3 * (z % 3);
 			for (int i = 1; i <= 3; i++) {
+				col = 3 * (z % 3);
 				for (int j = 1; j <= 3; j++) {
+					// System.out.println(z + " " + row + " " + col);
 					g.add(grid[row][col]);
+					grid[row][col].groups.add(g);
 					col++;
 				}
 				row++;
@@ -135,4 +171,12 @@ public class Solver {
 		}
 	}
 
+	public void print() {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				System.out.print(grid[i][j].value);
+			}
+			System.out.println("");
+		}
+	}
 }
