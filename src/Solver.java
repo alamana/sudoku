@@ -27,7 +27,15 @@ public class Solver {
 	public void fillEasyCells() {
 		// look at each group and remove a its values from every cell in the
 		// group
-		for (Group g : groups) {
+		
+		for (int i = 0; i < N; i++){
+			for (int j = 0; j < N; j++){
+				Cell curr = grid[i][j];
+				curr.removePossibles();
+				curr.fill();
+			}
+		}
+	/*	for (Group g : groups) {
 			System.out.println(g);
 			for (int i = 0; i < g.size(); i++) { // choose a cell
 				Cell a = g.get(i);
@@ -40,6 +48,7 @@ public class Solver {
 				}
 			}
 		}
+		*/
 	}
 
 	public boolean validGrid() {

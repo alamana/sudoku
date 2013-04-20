@@ -3,7 +3,7 @@ import java.util.ArrayList;
 public class Group extends ArrayList<Cell> {
 
 	public int N = 9;
-	public boolean groupVals[];
+	public boolean groupVals[]; // true if group contains value
 	public String type;
 
 	public Group() {

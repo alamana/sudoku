@@ -24,22 +24,41 @@ public class Cell {
 	}
 
 	public void decSize() { // prevents size from being less than 1
-		if (size > 0)
+		if (size > 1)
 			size--;
 	}
 
-	public void fill() { // meant to be called when there's only 1 possible value for the cell
-		if (size == 1 && empty) {
+	public void fill() { // meant to be called when there's only 1 possible
+							// value for the cell
+		if (empty) {
 			size = 0;
-			for (int i = 0; i < possibles.length; i++) { // since there should only be 1 nonzero entry in possibles
-								// we can take the first nonzero
+			for (int i = 0; i < possibles.length; i++) { // since there should
+															// only be 1 nonzero
+															// entry in
+															// possibles
+				// we can take the first nonzero
 				if (possibles[i] != 0) {
 					value = possibles[i];
 					empty = false;
-					for (int j = 0; j < groups.size(); j++){ // set flags for groups
-						groups.get(j).groupVals[value - 1] = true; // groupVals is zero indexed
+					for (int j = 0; j < groups.size(); j++) { // set flags for
+																// groups
+						groups.get(j).groupVals[value - 1] = true; // groupVals
+																	// is zero
+																	// indexed
 					}
 					break;
+				}
+			}
+		}
+	}
+
+	public void removePossibles(){
+		for (Group g : groups) {
+			boolean list[] = g.groupVals;
+			for (int i = 0; i < list.length; i++) {
+				if (list[i]) {
+					possibles[i] = 0;
+					this.decSize();
 				}
 			}
 		}
