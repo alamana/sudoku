@@ -5,7 +5,7 @@ public class Cell {
 	public int N = 9;
 
 	public int possibles[];
-	public int size;
+	public int size; // number of possible values for the cell
 	public int value;
 	public int name;
 	public boolean empty;
@@ -23,20 +23,21 @@ public class Cell {
 		groups = new ArrayList<Group>();
 	}
 
-	public void decSize() { // prevents size from being negative
+	public void decSize() { // prevents size from being less than 1
 		if (size > 0)
 			size--;
 	}
 
-	public void fill() {
+	public void fill() { // meant to be called when there's only 1 possible value for the cell
 		if (size == 1 && empty) {
 			size = 0;
-			for (int i = 0; i < possibles.length; i++) {
+			for (int i = 0; i < possibles.length; i++) { // since there should only be 1 nonzero entry in possibles
+								// we can take the first nonzero
 				if (possibles[i] != 0) {
 					value = possibles[i];
 					empty = false;
-					for (int j = 0; j < groups.size(); j++){
-						groups.get(j).groupVals[value - 1] = true;
+					for (int j = 0; j < groups.size(); j++){ // set flags for groups
+						groups.get(j).groupVals[value - 1] = true; // groupVals is zero indexed
 					}
 					break;
 				}
@@ -45,7 +46,6 @@ public class Cell {
 	}
 
 	public void removePossible(int x) {
-		this.fill();
 		if (x != 0) {
 			possibles[x - 1] = 0;
 			this.decSize();
