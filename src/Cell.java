@@ -10,12 +10,14 @@ public class Cell {
 	public int name;
 	public boolean empty;
 	public ArrayList<Group> groups;
+	public int sum;
 
 	Cell() {
 		name = 0;
 		empty = true;
 		value = 0;
 		size = N;
+		sum = N * (N + 1) / 2;
 		possibles = new int[N];
 		for (int i = 0; i < N; i++) {
 			possibles[i] = i + 1;
@@ -39,12 +41,16 @@ public class Cell {
 				// we can take the first nonzero
 				if (possibles[i] != 0) {
 					value = possibles[i];
-					empty = false;
-					for (int j = 0; j < groups.size(); j++) { // set flags for
-																// groups
-						groups.get(j).groupVals[value - 1] = true; // groupVals
-																	// is zero
-																	// indexed
+					if (value == sum) {
+						empty = false;
+						for (int j = 0; j < groups.size(); j++) { // set flags
+																	// for
+																	// groups
+							groups.get(j).groupVals[value - 1] = true; // groupVals
+																		// is
+																		// zero
+																		// indexed
+						}
 					}
 					break;
 				}
@@ -52,11 +58,12 @@ public class Cell {
 		}
 	}
 
-	public void removePossibles(){
+	public void removePossibles() {
 		for (Group g : groups) {
 			boolean list[] = g.groupVals;
 			for (int i = 0; i < list.length; i++) {
 				if (list[i]) {
+					sum -= possibles[i];
 					possibles[i] = 0;
 					this.decSize();
 				}
