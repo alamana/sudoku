@@ -31,26 +31,13 @@ public class Solver {
 			System.out.println(g);
 			for (int i = 0; i < g.size(); i++) { // choose a cell
 				Cell a = g.get(i);
-				if (!a.empty)
+				if (!a.empty) // no need to check filled in cells
 					continue;
 				for (int j = 0; j < g.groupVals.length && a.empty; j++) {
 					if (g.groupVals[j]) {
-						a.removePossible(j + 1);
+						a.removePossible(j + 1); // groupVals is zero indexed
 					}
 				}
-				// for (int j = 0; j < g.size() && a.empty; j++) { // compare
-				// every
-				// // other cell to
-				// // it if a is
-				// // empty
-				// Cell b = g.get(j);
-				// if (a.equals(b) || b.empty) { // no need to look at empty
-				// cells or at
-				// // oneself
-				// continue;
-				// }
-				// a.removePossible(b.value);
-				// }
 			}
 		}
 	}
