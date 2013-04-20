@@ -30,8 +30,9 @@ public class Cell {
 			size--;
 	}
 
-	public void fill() { // meant to be called when there's only 1 possible
+	public boolean fill() { // meant to be called when there's only 1 possible
 							// value for the cell
+		boolean ret = false;
 		if (empty) {
 			size = 0;
 			for (int i = 0; i < possibles.length; i++) { // since there should
@@ -42,6 +43,7 @@ public class Cell {
 				if (possibles[i] != 0) {
 					value = possibles[i];
 					if (value == sum) {
+						ret = true;
 						empty = false;
 						for (int j = 0; j < groups.size(); j++) { // set flags
 																	// for
@@ -56,6 +58,7 @@ public class Cell {
 				}
 			}
 		}
+		return ret;
 	}
 
 	public void removePossibles() {

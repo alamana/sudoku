@@ -19,36 +19,32 @@ public class Solver {
 	}
 
 	public void solve() {
-		for (int i = 0; i < 1; i++)
-			fillEasyCells();
-
+		boolean changed = true;
+		while (changed){
+			changed = fillEasyCells();
+		}
 	}
 
-	public void fillEasyCells() {
+	public boolean fillEasyCells() {
 		// look at each group and remove a its values from every cell in the
 		// group
-		
+		boolean ret = false;
 		for (int i = 0; i < N; i++){
 			for (int j = 0; j < N; j++){
 				Cell curr = grid[i][j];
 				curr.removePossibles();
-				curr.fill();
-			}
-		}
-	/*	for (Group g : groups) {
-			System.out.println(g);
-			for (int i = 0; i < g.size(); i++) { // choose a cell
-				Cell a = g.get(i);
-				if (!a.empty) // no need to check filled in cells
-					continue;
-				for (int j = 0; j < g.groupVals.length && a.empty; j++) {
-					if (g.groupVals[j]) {
-						a.removePossible(j + 1); // groupVals is zero indexed
-					}
+				boolean temp = curr.fill();
+				if (temp){ // do move
+					Move m = new Move();
+					m.loc = i*100 + j;
+					m.guess = false;
+					m.value = curr.value;
+					moves.push(m);
 				}
+				ret |= temp; // return true if at least one change is made
 			}
 		}
-		*/
+		return ret;
 	}
 
 	public boolean validGrid() {
@@ -92,14 +88,6 @@ public class Solver {
 				}
 			}
 		}
-	}
-
-	public void makeMove(Move m) {
-		int loc = m.loc;
-		int col = loc % 10;
-		int row = loc / 100;
-		grid[row][col].empty = false;
-		grid[row][col].value = m.value;
 	}
 
 	public void undoMove(Move m) {
