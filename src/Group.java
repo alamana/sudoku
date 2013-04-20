@@ -13,16 +13,24 @@ public class Group extends ArrayList<Cell> {
 	}
 
 	public boolean add(Cell c) {
-		if (super.contains(c)) {
-			int val = c.value;
-			groupVals[val - 1] = true;
-			super.add(c);
-			return true;
-		}
-		return false;
+		int val = c.value;
+		groupVals[val - 1] = true;
+		super.add(c);
+		return true;
 	}
 
-	public boolean valid() { // returns true if the group doesn't contain any repeat values
+	public boolean remove(Cell c) {
+		// if (super.contains(c)) {
+		int val = c.value;
+		groupVals[val - 1] = false;
+		super.remove(c);
+		return true;
+		// }
+		// return false;
+	}
+
+	public boolean valid() { // returns true if the group doesn't contain any
+								// repeat values
 
 		int possibles[] = new int[N]; // all 0
 

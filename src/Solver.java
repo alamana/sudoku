@@ -19,7 +19,20 @@ public class Solver {
 	}
 
 	public void solve() {
+		fillEasyCells();
 		
+	}
+	
+	public void fillEasyCells(){
+		
+	}
+
+	public boolean validGrid() {
+		for (Group g : groups) {
+			if (!g.valid())
+				return false;
+		}
+		return true;
 	}
 
 	public void loadGrid(String file, int size) {
@@ -51,6 +64,22 @@ public class Solver {
 				}
 			}
 		}
+	}
+
+	public void makeMove(Move m) {
+		int loc = m.loc;
+		int col = loc % 10;
+		int row = loc / 100;
+		grid[row][col].empty = false;
+		grid[row][col].value = m.value;
+	}
+
+	public void undoMove(Move m) {
+		int loc = m.loc;
+		int col = loc % 10;
+		int row = loc / 100;
+		grid[row][col].empty = true;
+		grid[row][col].value = 0;
 	}
 
 	public void makeGrid() {
