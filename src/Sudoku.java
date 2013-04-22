@@ -5,7 +5,7 @@ import java.awt.event.*;
 
 public class Sudoku  extends JFrame{
 
-	public static int n = 3;
+	public static int n = 6;
 	public static JPanel grid;
 	public static Cell[][] solution, puzzle, current;
 	public static JPanel panel;
@@ -36,7 +36,7 @@ public class Sudoku  extends JFrame{
 	    generateButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent event) {
 	    		n = Integer.parseInt(JOptionPane.showInputDialog("Input n (standard Sudoku is n=3)"));
-	    		grid.setLayout(new GridLayout(n, n, 20, 20));
+	    		grid.setLayout(new GridLayout(n, n, 10, 10));
 	    		puzzle = new Cell[n*n][n*n];
 	    		solution = new Cell[n*n][n*n];
 	    		current = new Cell[n*n][n*n];
@@ -84,9 +84,9 @@ public class Sudoku  extends JFrame{
 			}
 		}
 	    
-	    grid.setLayout(new GridLayout(n, n, 20, 20));
+	    grid.setLayout(new GridLayout(n, n, 10, 10));
 	    
-	    int buttonDim = (700-(n*20))/(n*n);
+	    int buttonDim = (700-(n*10))/(n*n);
 	    System.out.println(buttonDim);
 	    subgrid = new JPanel[n*n];
 		
@@ -95,8 +95,8 @@ public class Sudoku  extends JFrame{
 			subgrid[i].setLayout(new GridLayout(n,n));
 			for(int x = 0; x < n; x++) {
 				for(int y = 0; y < n; y++) {
-					final int fx = 3*((i)%3)+x;
-					final int fy = 3*((i)/3)+y;
+					final int fx = n*((i)%n)+x;
+					final int fy = n*((i)/n)+y;
 					final JButton button = new JButton(""+current[fx][fy].value);
 					button.setSize(buttonDim, buttonDim);
 				    button.addActionListener(new ActionListener() {
