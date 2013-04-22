@@ -97,17 +97,19 @@ public class Sudoku  extends JFrame{
 				for(int y = 0; y < n; y++) {
 					final int fx = n*((i)%n)+x;
 					final int fy = n*((i)/n)+y;
-					final JButton button = new JButton(""+current[fx][fy].value);
-					button.setSize(buttonDim, buttonDim);
-				    button.addActionListener(new ActionListener() {
+					final JTextField square = new JTextField(""+current[fx][fy].value);
+					//button.setSize(buttonDim, buttonDim);
+				    square.addActionListener(new ActionListener() {
 				    	public void actionPerformed(ActionEvent event) {
-				    		int temp = Integer.parseInt(JOptionPane.showInputDialog("Enter new value"));
-				    		button.setText(""+temp);
+				    		//int temp = Integer.parseInt(JOptionPane.showInputDialog("Enter new value"));
+				    		int temp = Integer.parseInt(square.getText());
+				    		System.out.println("INSIDE FIELD: " + temp);
+				    		square.setText(""+temp);
 				    		current[fx][fy].value = temp;
 				    	}
 				    });
-				    System.out.println(button.getWidth() + " " + button.getHeight());
-				    subgrid[i].add(button);
+				    //System.out.println(button.getWidth() + " " + button.getHeight());
+				    subgrid[i].add(square);
 				}
 			}
 			grid.add(subgrid[i]);
