@@ -18,6 +18,10 @@ public class Solver {
 		N = 9;
 	}
 
+	public void solve() {
+
+	}
+
 	public boolean fillEasyCells() {
 		boolean ret = false;
 		reducePossibilites();
@@ -30,12 +34,30 @@ public class Solver {
 		return ret;
 	}
 
+	public void guess() {
+		Cell c = firstUndetermined();
+		if (c != null) {
+			c.assignGuess(c.guess());
+		}
+	}
+
 	public void addMove(boolean guess, int value, int loc) {
 		Move move = new Move();
 		move.guess = guess;
 		move.value = value;
 		move.loc = loc;
 		moves.push(move);
+	}
+
+	public Cell firstUndetermined() {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (grid[i][j].size > 1 && grid[i][j].empty) {
+					return grid[i][j];
+				}
+			}
+		}
+		return null;
 	}
 
 	public Cell firstDetermined() {

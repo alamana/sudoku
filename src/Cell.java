@@ -6,18 +6,20 @@ public class Cell {
 
 	public int possibles[];
 	public int size; // number of possible values for the cell
+	public int sizeBackup;
 	public int value;
 	public int name;
 	public boolean empty;
 	public ArrayList<Group> groups;
-	public int sum;
+	public int checksum;
 
 	Cell() {
 		name = 0;
 		empty = true;
 		value = 0;
 		size = N;
-		sum = N * (N + 1) / 2;
+		sizeBackup = size;
+		checksum = N * (N + 1) / 2;
 		possibles = new int[N];
 		for (int i = 0; i < N; i++) {
 			possibles[i] = i + 1;
@@ -34,31 +36,62 @@ public class Cell {
 							// value for the cell
 		boolean ret = false;
 		if (empty) {
-			size = 0;
 			for (int i = 0; i < possibles.length; i++) { // since there should
 															// only be 1 nonzero
 															// entry in
 															// possibles
 				// we can take the first nonzero
 				if (possibles[i] != 0) {
-					value = possibles[i];
-					if (value == sum) {
-						ret = true;
-						empty = false;
-						for (int j = 0; j < groups.size(); j++) { // set flags
-																	// for
-																	// groups
-							groups.get(j).groupVals[value - 1] = true; // groupVals
-																		// is
-																		// zero
-																		// indexed
-						}
-					}
+					this.assignValue(possibles[i]);
+					ret = true;
 					break;
 				}
 			}
 		}
 		return ret;
+	}
+
+	public void assignValue(int n) {
+		value = n;
+		sizeBackup = size;
+		size = 0;
+		if (value == checksum) {
+			empty = false;
+			for (int j = 0; j < groups.size(); j++) { // set flags
+														// for
+														// groups
+				groups.get(j).groupVals[value - 1] = true; // groupVals
+															// is
+															// zero
+															// indexed
+			}
+		}
+	}
+
+	public void assignGuess(int guess) {
+		sizeBackup = size;
+		size = 0;
+		empty = false;
+		value = guess;
+		for (Group g : groups) {
+			g.groupVals[value - 1] = true;
+		}
+	}
+
+	public void removeGuess() {
+		size = sizeBackup;
+		empty = true;
+		value = 0;
+		for (Group g : groups)
+			g.groupVals[value - 1] = false;
+	}
+
+	public int guess() {
+		for (int i = 0; i < possibles.length; i++) {
+			if (possibles[i] != 0)
+				return possibles[i];
+		}
+		return -1;
 	}
 
 	public boolean removePossibles() {
@@ -68,7 +101,7 @@ public class Cell {
 			for (int i = 0; i < list.length; i++) {
 				if (list[i]) {
 					ret = true;
-					sum -= possibles[i];
+					checksum -= possibles[i];
 					possibles[i] = 0;
 					this.decSize();
 				}
