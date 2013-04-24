@@ -19,7 +19,61 @@ public class Solver {
 	}
 
 	public void solve() {
+		int counter = 0;
+		while (!solved() && counter++ < 50) {
+			// we've done goofed if there's an empty cell with 0 possiblities
+			if (!sanityCheck()) {
+				backtrack();
+			}
+			reducePossibilites();
+			// while (fillEasyCells()) { // fillEasyCells returns false if
+			// // there's
+			// // nothing else to fill in
+			// System.out.println("------");
+			// print();
+			// System.out.println("------");
+			// }
+			// make a guess
+			guess();
+		}
+	}
 
+	public void backtrack() {
+		System.out.println("backtracking");
+		// pop stuff off the stack until we get to some that was a guess
+		Move m = moves.pop();
+		undoMove(m);
+		while (!m.guess) {
+			m = moves.pop();
+			undoMove(m);
+		}
+		int row = m.loc / 100;
+		int col = m.loc % 10;
+		Cell c = grid[row][col];
+		c.removePossible();
+		c.assignGuess(c.guess());
+		addMove(true, c.value, c.name);
+	}
+
+	public boolean sanityCheck() {
+		for (Cell[] cells : grid) {
+			for (Cell c : cells) {
+				if (c.empty && c.size == 0) {
+					System.out.println("sanityCheck: " + c.name);
+					return false;
+				}
+			}
+		}
+		System.out.println("sanity check returning true");
+		return true;
+	}
+
+	public boolean solved() {
+		for (Cell[] cells : grid)
+			for (Cell c : cells)
+				if (c.value == 0)
+					return false;
+		return true;
 	}
 
 	public boolean fillEasyCells() {
@@ -37,7 +91,13 @@ public class Solver {
 	public void guess() {
 		Cell c = firstUndetermined();
 		if (c != null) {
+			System.out.println("guess: " + c.name);
 			c.assignGuess(c.guess());
+			Move m = new Move();
+			m.guess = true;
+			m.value = c.value;
+			m.loc = c.name;
+			moves.push(m);
 		}
 	}
 
@@ -52,7 +112,7 @@ public class Solver {
 	public Cell firstUndetermined() {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				if (grid[i][j].size > 1 && grid[i][j].empty) {
+				if (grid[i][j].size > 0 && grid[i][j].empty) {
 					return grid[i][j];
 				}
 			}
@@ -123,6 +183,7 @@ public class Solver {
 				if (0 < val && val <= N) {
 					grid[i][j].value = val;
 					grid[i][j].empty = false;
+					addMove(false, grid[i][j].value, grid[i][j].name);
 					for (int k = 0; k < grid[i][j].groups.size(); k++) {
 						Group g = grid[i][j].groups.get(k);
 						g.groupVals[grid[i][j].value - 1] = true;
@@ -136,8 +197,7 @@ public class Solver {
 		int loc = m.loc;
 		int col = loc % 10;
 		int row = loc / 100;
-		grid[row][col].empty = true;
-		grid[row][col].value = 0;
+		grid[row][col].undo();
 	}
 
 	public void makeGrid() {

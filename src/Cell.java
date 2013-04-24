@@ -27,9 +27,12 @@ public class Cell {
 		groups = new ArrayList<Group>();
 	}
 
-	public void decSize() { // prevents size from being less than 1
-		if (size > 1)
-			size--;
+	public void adjustSize() { // prevents size from being less than 1
+		size = 0;
+		for (int i : possibles) {
+			if (i != 0)
+				size++;
+		}
 	}
 
 	public boolean fill() { // meant to be called when there's only 1 possible
@@ -55,17 +58,17 @@ public class Cell {
 		value = n;
 		sizeBackup = size;
 		size = 0;
-		if (value == checksum) {
-			empty = false;
-			for (int j = 0; j < groups.size(); j++) { // set flags
-														// for
-														// groups
-				groups.get(j).groupVals[value - 1] = true; // groupVals
-															// is
-															// zero
-															// indexed
-			}
+		// if (value == checksum) {
+		empty = false;
+		for (int j = 0; j < groups.size(); j++) { // set flags
+													// for
+													// groups
+			groups.get(j).groupVals[value - 1] = true; // groupVals
+														// is
+														// zero
+														// indexed
 		}
+		// }
 	}
 
 	public void assignGuess(int guess) {
@@ -103,21 +106,21 @@ public class Cell {
 					ret = true;
 					checksum -= possibles[i];
 					possibles[i] = 0;
-					this.decSize();
+					this.adjustSize();
 				}
 			}
 		}
 		return ret;
 	}
 
-	public void removePossible(int x) {
-		if (x != 0) {
-			possibles[x - 1] = 0;
-			this.decSize();
-			if (size == 1) {
-				this.fill();
+	public void removePossible() {
+			for (Group g : groups) {
+				g.groupVals[value - 1] = false;
 			}
-		}
+			possibles[value - 1] = value;
+			value = 0;
+			empty = true;
+			this.adjustSize();
 	}
 
 	@Override
@@ -138,5 +141,16 @@ public class Cell {
 		}
 		ret += "]";
 		return ret;
+	}
+
+	public void undo() {
+		possibles[value - 1] = value;
+		empty = true;
+		size = sizeBackup;
+		checksum += value;
+		for (Group g : groups) {
+			g.groupVals[value - 1] = true;
+		}
+		value = 0;
 	}
 }

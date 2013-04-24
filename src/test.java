@@ -5,8 +5,8 @@ public class test {
 	 */
 	public static void main(String[] args) {
 		Solver solver = new Solver();
-		solver.loadGrid("testFiles/superEasy", 9);
-		solver.fillEasyCells();
+		solver.loadGrid("testFiles/medium1", 9);
+		solver.solve();
 		solver.print();
 		// System.out.println(solver.grid[0][6].name
 		// + "'s groups are: (name, value) "
