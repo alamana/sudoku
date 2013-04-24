@@ -61,17 +61,20 @@ public class Cell {
 		return ret;
 	}
 
-	public void removePossibles() {
+	public boolean removePossibles() {
+		boolean ret = false;
 		for (Group g : groups) {
 			boolean list[] = g.groupVals;
 			for (int i = 0; i < list.length; i++) {
 				if (list[i]) {
+					ret = true;
 					sum -= possibles[i];
 					possibles[i] = 0;
 					this.decSize();
 				}
 			}
 		}
+		return ret;
 	}
 
 	public void removePossible(int x) {

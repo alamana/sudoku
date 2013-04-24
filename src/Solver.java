@@ -18,30 +18,50 @@ public class Solver {
 		N = 9;
 	}
 
-	public void solve() {
-		boolean changed = true;
-		while (changed){
-			changed = fillEasyCells();
+	public boolean fillEasyCells() {
+		boolean ret = false;
+		reducePossibilites();
+		Cell c;
+		while ((c = firstDetermined()) != null) {
+			ret = true;
+			c.fill();
+			addMove(false, c.value, c.name);
+		}
+		return ret;
+	}
+
+	public void addMove(boolean guess, int value, int loc) {
+		Move move = new Move();
+		move.guess = guess;
+		move.value = value;
+		move.loc = loc;
+		moves.push(move);
+	}
+
+	public Cell firstDetermined() {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				if (grid[i][j].size == 1 && grid[i][j].empty) {
+					return grid[i][j];
+				}
+			}
+		}
+		return null;
+	}
+
+	public void easyReduce() {
+		boolean reduced = true;
+		while (reduced) {
+			reduced = reducePossibilites();
 		}
 	}
 
-	public boolean fillEasyCells() {
-		// look at each group and remove a its values from every cell in the
-		// group
+	public boolean reducePossibilites() {
 		boolean ret = false;
-		for (int i = 0; i < N; i++){
-			for (int j = 0; j < N; j++){
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
 				Cell curr = grid[i][j];
-				curr.removePossibles();
-				boolean temp = curr.fill();
-				if (temp){ // do move
-					Move m = new Move();
-					m.loc = i*100 + j;
-					m.guess = false;
-					m.value = curr.value;
-					moves.push(m);
-				}
-				ret |= temp; // return true if at least one change is made
+				ret |= curr.removePossibles();
 			}
 		}
 		return ret;
