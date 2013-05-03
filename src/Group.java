@@ -11,15 +11,19 @@ public class Group extends ArrayList<Cell> {
 		type = "";
 		groupVals = new boolean[N]; // initializes to false
 	}
-/**
- * Add the passed in cell to this group. Adjusts groupVals and then calls super.add. Always returns true.
- * 
- * @param c	Cell to be added
- * @return true
- */
+
+	/**
+	 * Add the passed in cell to this group. Adjusts groupVals and then calls
+	 * super.add. Always returns true.
+	 * 
+	 * @param c
+	 *            Cell to be added
+	 * @return true
+	 */
 	public boolean add(Cell c) {
 		boolean status = this.addValue(c.value);
-		if (!status) System.out.println("Group.add: invalid add");
+		if (!status && c.value > 0)
+			System.out.println("Group.add: invalid add with cell " + c.name);
 		super.add(c);
 		return true;
 	}
@@ -27,31 +31,32 @@ public class Group extends ArrayList<Cell> {
 	/**
 	 * Removes a cell from this group. Always returns true.
 	 * 
-	 * @param c	Cell to be removed from this group.
+	 * @param c
+	 *            Cell to be removed from this group.
 	 * @return
 	 */
 	public boolean remove(Cell c) {
-		// if (super.contains(c)) {
 		boolean status = this.removeValue(c.value);
-		if (!status) System.out.println("Group.add: invalid remove");
+		if (!status)
+			System.out.println("Group.add: invalid remove");
 		super.remove(c);
 		return true;
-		// }
-		// return false;
 	}
 
 	/**
 	 * Returns true if the group doesn't contain any repeat values.
 	 */
 	public boolean valid() {
-		int possibles[] = new int[N]; // all 0
+		boolean possibles[] = new boolean[N]; // all false
 
 		for (int i = 0; i < this.size(); i++) {
 			int val = this.get(i).value;
-			if (possibles[val - 1] != 0)
-				return false;
-			else
-				possibles[val - 1] = 1;
+			if (val > 0) {
+				if (possibles[val - 1])
+					return false;
+				else
+					possibles[val - 1] = true;
+			}
 		}
 		return true;
 	}
@@ -59,7 +64,8 @@ public class Group extends ArrayList<Cell> {
 	/**
 	 * Returns true if value n is not in the group.
 	 * 
-	 * @param n	Value to check
+	 * @param n
+	 *            Value to check
 	 */
 	public boolean valid(int n) {
 		return !groupVals[n - 1];
@@ -76,6 +82,8 @@ public class Group extends ArrayList<Cell> {
 				groupVals[n - 1] = true;
 				ret = true;
 			}
+		} else {
+			// System.out.println("Group.addValue: n less than 1");
 		}
 		return ret;
 	}

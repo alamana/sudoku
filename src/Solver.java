@@ -19,13 +19,14 @@ public class Solver {
 	}
 
 	public void solve() {
+		//for (int i = 0; i < 3; i ++) System.out.println(grid[0][0].groups.get(i).toString());
 		int counter = 0;
 		while (!solved() && counter++ < 500) {
 			reducePossibilites();
 			// we've done goofed if there's an empty cell with 0 possiblities
-			if (!sanityCheck()) {
-				backtrack();
-			}
+			// if (!sanityCheck()) {
+			// backtrack();
+			// }
 			// while (fillEasyCells()) { // fillEasyCells returns false if
 			// // there's
 			// // nothing else to fill in
@@ -72,12 +73,12 @@ public class Solver {
 		for (Cell[] cells : grid) {
 			for (Cell c : cells) {
 				if (c.empty && c.size == 0) {
-					System.out.println("sanityCheck: " + c.name);
+					// System.out.println("sanityCheck: " + c.name);
 					return false;
 				}
 			}
 		}
-		System.out.println("sanity check returning true");
+		// System.out.println("sanity check returning true");
 		return true;
 	}
 
@@ -118,9 +119,25 @@ public class Solver {
 	 */
 	public void guess() {
 		Cell c = firstUndetermined();
+		// System.out.println("Solver.guess: firstUndetermined returned " +
+		// c.name);
 		if (c != null) {
-			System.out.println("guess: " + c.name);
-			c.assignValue(c.getGuess());
+			// System.out.println("guess: " + c.name);
+			System.out.println(c.name + "'s groups are:");
+			for (int i = 0; i < c.groups.size(); i++) {
+				System.out.println(c.groups.get(i).toString());
+			}
+			System.out.println(c.name + "'s possible values are: ");
+			for (int i = 0; i < c.possibles.length; i++){
+				if (c.possibles[i])
+					System.out.print(i+1  + " ");
+			}
+			System.out.println("");
+			int cellguess = c.getGuess();
+			System.out.println("Solver.guess: " + c.name + " guessed "
+					+ cellguess);
+			
+			c.assignValue(cellguess);
 			Move m = new Move();
 			m.guess = true;
 			m.value = c.value;
@@ -256,16 +273,18 @@ public class Solver {
 			for (int j = 0; j < N; j++) {
 				int val = (int) (line.charAt(j) - '0');
 				if (0 < val && val <= N) {
-					grid[i][j].value = val;
-					grid[i][j].empty = false;
+//					grid[i][j].value = val;
+//					grid[i][j].empty = false;
+					grid[i][j].assignValue(val);
 					addMove(false, grid[i][j].value, grid[i][j].name);
-					for (int k = 0; k < grid[i][j].groups.size(); k++) {
-						Group g = grid[i][j].groups.get(k);
-						g.groupVals[grid[i][j].value - 1] = true;
-					}
+//					for (int k = 0; k < grid[i][j].groups.size(); k++) {
+//						Group g = grid[i][j].groups.get(k);
+//						g.groupVals[grid[i][j].value - 1] = true;
+//					}
 				}
 			}
 		}
+		//for (int i = 0; i < 3; i ++) System.out.println(grid[0][0].groups.get(i).toString());
 	}
 
 	/**

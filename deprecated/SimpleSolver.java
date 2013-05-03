@@ -101,8 +101,8 @@ public class SimpleSolver {
 			// check to see what else is in the rows, columns, and blocks
 			int nextVal = 0;
 			for (int i = 0; i < firstZero.possibles.length; i++) {
-				if (firstZero.possibles[i] != 0) {
-					nextVal = firstZero.possibles[i];
+				if (firstZero.possibles[i]) {
+					nextVal = i+1;
 					break;
 				}
 			}
@@ -151,7 +151,7 @@ public class SimpleSolver {
 			for (int j = 0; j < N; j++) {
 				TreeSet<Integer> temp = new TreeSet<Integer>();
 				for (int z = 0; z < NUM_NUMBERS; z++) {
-					temp.add(grid[i][j].possibles[z]);
+					temp.add(z+1);
 				}
 				temp.remove(0); // we don't care about 0
 				sets.add(temp);

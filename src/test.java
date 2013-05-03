@@ -5,7 +5,8 @@ public class test {
 	 */
 	public static void main(String[] args) {
 		Solver solver = new Solver();
-		solver.loadGrid("testFiles/medium1", 9);
+		solver.loadGrid("testFiles/superEasy", 9);
+		//for (int i = 0; i < 3; i ++) System.out.println(solver.grid[0][0].groups.get(i).toString());
 		solver.solve();
 		solver.print();
 		// System.out.println(solver.grid[0][6].name

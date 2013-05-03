@@ -4,7 +4,7 @@ public class Cell {
 
 	public int N = 9;
 
-	public int possibles[];
+	public boolean possibles[];
 	public int size; // number of possible values for the cell
 	public int sizeBackup;
 	public int value, oldValue;
@@ -24,9 +24,9 @@ public class Cell {
 		size = N;
 		sizeBackup = size;
 		checksum = N * (N + 1) / 2;
-		possibles = new int[N];
+		possibles = new boolean[N];
 		for (int i = 0; i < N; i++) {
-			possibles[i] = i + 1;
+			possibles[i] = true;
 		}
 		groups = new ArrayList<Group>();
 	}
@@ -36,8 +36,8 @@ public class Cell {
 	 */
 	public void adjustSize() {
 		size = 0;
-		for (int i : possibles) {
-			if (i != 0)
+		for (boolean i : possibles) {
+			if (i)
 				size++;
 		}
 	}
@@ -52,9 +52,9 @@ public class Cell {
 															// only be 1 nonzero
 															// entry in
 															// possibles
-				// we can take the first nonzero
-				if (possibles[i] != 0) {
-					this.assignValue(possibles[i]);
+				// we can take the first true value
+				if (possibles[i]) {
+					this.assignValue(i + 1);
 					ret = true;
 					break;
 				}
@@ -95,9 +95,10 @@ public class Cell {
 	 * Returns -1 if no nonzero value is found.
 	 */
 	public int getGuess() {
+		this.removePossibles();
 		for (int i = 0; i < possibles.length; i++) {
-			if (possibles[i] != 0)
-				return possibles[i];
+			if (possibles[i])
+				return i + 1;
 		}
 		return -1;
 	}
@@ -132,10 +133,10 @@ public class Cell {
 	 *            to remove from this cell's list of possible values.
 	 */
 	public void removePossible(int n) {
-		for (Group g : groups) {
-			g.removeValue(n);
-		}
-		possibles[n - 1] = 0;
+		//for (Group g : groups) {
+		//	g.removeValue(n);
+		//}
+		possibles[n - 1] = false;
 		checksum -= n - 1;
 		this.adjustSize();
 	}
