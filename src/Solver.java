@@ -9,14 +9,13 @@ import java.util.Stack;
  * 
  * @author sjboris
  * @author alamana
- * @version %I%, %G%
  */
 public class Solver {
 
 	public int N;
 	public String filename;
 	public Cell grid[][];
-	public Stack<Move> moves;
+	public Stack<Move> moveHistory;
 	public ArrayList<Group> groups;
 
 	/**
@@ -24,61 +23,100 @@ public class Solver {
 	 */
 	public Solver() {
 		groups = new ArrayList<Group>();
-		moves = new Stack<Move>();
+		moveHistory = new Stack<Move>();
 		N = 9;
 	}
 
 	/**
-	 * Uses a combination of logic and guessing to solve a board. Runs until the board is solved.
+	 * Uses a combination of logic and guessing to solve a board. Runs until the
+	 * board is solved.
 	 */
-	public void solve() {
-		// for (int i = 0; i < 3; i ++)
-		// System.out.println(grid[0][0].groups.get(i).toString());
-		int counter = 0; // to prevent looping forever while testing
-		while (!solved() && counter++ < 500) {
-			reducePossibilites();
-			fillEasyCells();
-			// we've done goofed if there's an empty cell with 0 possiblities
-			if (!sanityCheck()) {
-				System.out.println("Sanity check failed!");
-				backtrack();
+	public boolean solve() {
+		Cell c = findUnassignedCell();
+
+		if (c == null)
+			return true;
+
+		for (int n = 1; n <= N; n++) {
+			if (validGrid() && !c.conflict(n)){
+				c.assignValue(n);
+				if (solve())
+					return true;
+				c.undoAssignment();
 			}
-			//while (fillEasyCells()) {} // fillEasyCells returns false if
-			// // there's
-			// // nothing else to fill in
-			
-				// System.out.println("------");
-			// print();
-			// System.out.println("------");
-			// }
-				
-			// make a guess
-			guess();
 		}
+		return false;
 	}
 
-	public void backtrack() {
-		System.out.println("backtracking");
-		// pop stuff off the stack until we get to something that was a guess
-		Move m = moves.pop();
-		System.out.println("popped off " + m.loc + " with value " + m.value);
-		int guessSave = m.value;
-		undoMove(m);
-		while (!m.guess) {
-			m = moves.pop();
-			System.out.println("popped off " + m.loc + " with value " + m.value);
-			guessSave = m.value;
-			undoMove(m);
+	public Cell findUnassignedCell() {
+		Cell ret = null;
+
+		for (int i = 0; i < N && ret == null; i++) {
+			for (int j = 0; j < N && ret == null; j++) {
+				if (grid[i][j].empty) {
+					ret = grid[i][j];
+				}
+			}
 		}
+
+		return ret;
+	}
+
+	/**
+	 * Uses row = m.loc/100 and col = m.loc%10 to find which grid spot m
+	 * corresponds to.
+	 * 
+	 * @param m
+	 *            Move we want to find a cell for.
+	 * @return The cell corresponding to m's location.
+	 */
+	public Cell getCell(Move m) {
+		Cell ret = null;
 		int row = m.loc / 100;
 		int col = m.loc % 10;
-		Cell c = grid[row][col];
-		c.removePossible(guessSave);
-		System.out.println("going to give " + c.name + " a value of "
-				+ c.getGuess());
-		c.assignValue(c.getGuess());
+		ret = grid[row][col];
+		return ret;
+	}
 
-		addMove(true, c.value, c.name);
+	public boolean backtrack() {
+		System.out.println("backtracking");
+		// pop stuff off the stack until we get to something that was a guess
+		Move m = null;
+		m = moveHistory.pop();
+		System.out.println("popped off " + m.loc + " with value " + m.value
+				+ " and a guess value of " + m.guess);
+		int guessSave = m.value;
+
+		// undo m since we popped it off the stack
+		undoMove(m);
+
+		while (!m.guess) { // loop until we find a guess
+			// if (!moveHistory.empty()) {
+			m = moveHistory.pop();
+			System.out.println("popped off " + m.loc + " with value " + m.value
+					+ " and a guess value of " + m.guess);
+			guessSave = m.value;
+			undoMove(m);
+			// } else {
+			// return false;
+			// }
+		}
+		/*
+		 * // find the move's cell int row = m.loc / 100; int col = m.loc % 10;
+		 * Cell c = grid[row][col];
+		 * 
+		 * // remove the guess' value from c's possibilities
+		 * c.removePossible(guessSave);
+		 * 
+		 * // need to check to see if c's only possibility is -1. If it is, //
+		 * then we // need to keep popping moves.
+		 * System.out.println("going to give " + c.name + " a value of " +
+		 * c.getGuess()); if (c.getGuess() == -1) {
+		 * System.out.println("Going to backtrack some more"); backtrack(); }
+		 * else { c.assignValue(c.getGuess()); addMove(true, c.value, c.name); }
+		 */
+
+		return true;
 	}
 
 	/**
@@ -136,35 +174,39 @@ public class Solver {
 	 * undetermined cell and has it guess a value for itself.
 	 */
 	public void guess() {
+		System.out.println("Guessing!");
 		Cell c = firstUndetermined();
-		// System.out.println("Solver.guess: firstUndetermined returned " +
-		// c.name);
 		if (c != null) {
+			System.out.println("Solver.guess: firstUndetermined returned "
+					+ c.name);
 			// System.out.println("guess: " + c.name);
-			//System.out.println(c.name + "'s groups are:");
+			// System.out.println(c.name + "'s groups are:");
 			// for (int i = 0; i < c.groups.size(); i++) {
 			// System.out.println(c.groups.get(i).toString());
 			// }
-			//System.out.println(c.name + "'s possible values are: ");
+			// System.out.println(c.name + "'s possible values are: ");
 			// for (int i = 0; i < c.possibles.length; i++){
 			// if (c.possibles[i])
 			// System.out.print(i+1 + " ");
 			// }
 			// System.out.println("");
 			int cellguess = c.getGuess();
-			// System.out.println("Solver.guess: " + c.name + " guessed "
-			// + cellguess);
+			System.out.println("Solver.guess: " + c.name + " guessed "
+					+ cellguess);
+			if (cellguess != -1) {
+				c.assignValue(cellguess);
 
-			c.assignValue(cellguess);
-			
-			// add guess to stack
-			Move m = new Move();
-			m.guess = true;
-			m.value = c.value;
-			m.loc = c.name;
-			moves.push(m);
+				// add guess to stack
+				Move m = new Move();
+				m.guess = true;
+				m.value = c.value;
+				m.loc = c.name;
+				moveHistory.push(m);
+			} else {
+				backtrack();
+			}
 		} else {
-			//System.out.println("Solver.guess: firstUndetermined was null");
+			System.out.println("Solver.guess: firstUndetermined was null");
 		}
 	}
 
@@ -183,7 +225,7 @@ public class Solver {
 		move.guess = guess;
 		move.value = value;
 		move.loc = loc;
-		moves.push(move);
+		moveHistory.push(move);
 	}
 
 	/**
@@ -245,7 +287,8 @@ public class Solver {
 	}
 
 	/**
-	 * Looks at each group in groups and calls Group.valid(). A board if valid iff each of its groups is.
+	 * Looks at each group in groups and calls Group.valid(). A board if valid
+	 * iff each of its groups is.
 	 * 
 	 * @return true if every group in this grid is valid. False if at least one
 	 *         is not.
@@ -270,7 +313,7 @@ public class Solver {
 	 * 
 	 */
 	public void loadGrid(String file, int size) {
-		moves.clear();
+		moveHistory.clear();
 		this.filename = file;
 		this.N = size;
 
@@ -293,19 +336,10 @@ public class Solver {
 			for (int j = 0; j < N; j++) {
 				int val = (int) (line.charAt(j) - '0');
 				if (0 < val && val <= N) {
-					// grid[i][j].value = val;
-					// grid[i][j].empty = false;
 					grid[i][j].assignValue(val);
-					addMove(false, grid[i][j].value, grid[i][j].name);
-					// for (int k = 0; k < grid[i][j].groups.size(); k++) {
-					// Group g = grid[i][j].groups.get(k);
-					// g.groupVals[grid[i][j].value - 1] = true;
-					// }
 				}
 			}
 		}
-		// for (int i = 0; i < 3; i ++)
-		// System.out.println(grid[0][0].groups.get(i).toString());
 	}
 
 	/**
@@ -319,7 +353,10 @@ public class Solver {
 		int loc = m.loc;
 		int col = loc % 10;
 		int row = loc / 100;
-		grid[row][col].removeGuess();
+		if (m.guess)
+			grid[row][col].removeGuess();
+		else
+			grid[row][col].undoAssignment();
 	}
 
 	public void makeGrid() {

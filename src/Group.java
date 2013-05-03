@@ -1,7 +1,8 @@
 import java.util.ArrayList;
 
 /**
- * Group is meant to be used for dividing up the Sudoku grid. Checks to see if a board conforms to Sudoku rules should be done through this class. 
+ * Group is meant to be used for dividing up the Sudoku grid. Checks to see if a
+ * board conforms to Sudoku rules should be done through this class.
  * 
  * @author sjboris
  * @author alamana
@@ -63,7 +64,8 @@ public class Group extends ArrayList<Cell> {
 					return false;
 				else
 					possibles[val - 1] = true;
-			}
+			} else if (val < 0)
+				return false;
 		}
 		return true;
 	}

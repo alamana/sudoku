@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 
 /**
- * Cell corresponds to a single square on the Sudoku board. 
+ * Cell corresponds to a single square on the Sudoku board.
  * 
  * @author sjboris
  * @author alamana
@@ -50,6 +50,36 @@ public class Cell {
 	}
 
 	/**
+	 * 
+	 */
+	public int getDeterminedValue() {
+		int size = N;
+		boolean[] temp = new boolean[N];
+
+		// look through each of the cells groups and remove any values that the
+		// group already has
+		for (Group g : groups) {
+			for (int i = 0; i < g.groupVals.length; i++) {
+				if (g.groupVals[i]) { // if the group has the value
+					if (!temp[i]) // if we haven't already seen it
+						size--;
+					temp[i] = true;
+				}
+			}
+		}
+
+		if (size == 1) {
+			for (int i = 0; i < N; i++) {
+				if (!temp[i]) {
+					System.out.println("Cell.getDeterminedValue: returning " + (i+1));
+					return i + 1; // there should only be one true cell
+				}
+			}
+		}
+		return -1;
+	}
+
+	/**
 	 * Meant to be called when there's only 1 possible value for the cell
 	 */
 	public boolean fill() {
@@ -71,7 +101,8 @@ public class Cell {
 	}
 
 	/**
-	 * Sets this cell's value to n.
+	 * Sets this cell's value to n. Backs up value. Sets size to 0. Sets empty
+	 * to false.
 	 * 
 	 * @param n
 	 *            The value to be assigned to this cell.
@@ -102,11 +133,27 @@ public class Cell {
 	 * Returns -1 if no nonzero value is found.
 	 */
 	public int getGuess() {
-		this.removePossibles();
-		for (int i = 0; i < possibles.length; i++) {
-			if (possibles[i])
+		/*
+		 * // this.removePossibles(); for (int i = 0; i < possibles.length; i++)
+		 * { if (possibles[i]) return i + 1; }
+		 */
+
+		boolean[] temp = new boolean[N];
+		// look through each of the cells groups and remove any values that the
+		// group already has
+		for (Group g : groups) {
+			for (int i = 0; i < g.groupVals.length; i++) {
+				if (g.groupVals[i]) {
+					temp[i] = true;
+				}
+			}
+		}
+
+		for (int i = 0; i < temp.length; i++) {
+			if (!temp[i])
 				return i + 1;
 		}
+
 		return -1;
 	}
 
@@ -140,12 +187,16 @@ public class Cell {
 	 *            to remove from this cell's list of possible values.
 	 */
 	public void removePossible(int n) {
-		//for (Group g : groups) {
-		//	g.removeValue(n);
-		//}
-		possibles[n - 1] = false;
-		checksum -= n - 1;
-		this.adjustSize();
+		// for (Group g : groups) {
+		// g.removeValue(n);
+		// }
+		if (n > 0) {
+			possibles[n - 1] = false;
+			checksum -= n - 1;
+			this.adjustSize();
+		} else {
+			System.out.println("TRYING TO REMOVE A VALUE LESS THAN 1");
+		}
 	}
 
 	/**
@@ -172,6 +223,31 @@ public class Cell {
 		}
 		ret += "]";
 		return ret;
+	}
+	
+	/**
+	 * Returns true if n causes a conflict
+	 * 
+	 * @param n Value to check
+	 *
+	 */
+	public boolean conflict(int n){
+		for (Group g : groups){
+			if (!g.valid(n))
+				return true;
+		}
+		return false;
+	}
+
+	public void undoAssignment() {
+		size = sizeBackup;
+		//checksum += value;
+		for (Group g : groups) {
+			g.removeValue(value);
+			// g.recalculateValues();
+		}
+		value = 0;
+		empty = true;
 	}
 
 	// Looks the same as removeGuess.
