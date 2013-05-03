@@ -1,5 +1,12 @@
 import java.util.ArrayList;
 
+/**
+ * Group is meant to be used for dividing up the Sudoku grid. Checks to see if a board conforms to Sudoku rules should be done through this class. 
+ * 
+ * @author sjboris
+ * @author alamana
+ * @version %I%, %G%
+ */
 public class Group extends ArrayList<Cell> {
 
 	public int N = 9;
@@ -33,7 +40,7 @@ public class Group extends ArrayList<Cell> {
 	 * 
 	 * @param c
 	 *            Cell to be removed from this group.
-	 * @return
+	 * @return Always returns true.
 	 */
 	public boolean remove(Cell c) {
 		boolean status = this.removeValue(c.value);

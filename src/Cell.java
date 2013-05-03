@@ -1,5 +1,12 @@
 import java.util.ArrayList;
 
+/**
+ * Cell corresponds to a single square on the Sudoku board. 
+ * 
+ * @author sjboris
+ * @author alamana
+ * @version %I%, %G%
+ */
 public class Cell {
 
 	public int N = 9;
@@ -129,7 +136,7 @@ public class Cell {
 	 * Removes a possibility from possibles[], removes value from groups, and
 	 * adjusts size
 	 * 
-	 * @param Value
+	 * @param n
 	 *            to remove from this cell's list of possible values.
 	 */
 	public void removePossible(int n) {

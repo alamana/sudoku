@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Stack;
 
+/**
+ * Solver solves a Sudoku board with a combination of logic and backtracking.
+ * 
+ * @author sjboris
+ * @author alamana
+ * @version %I%, %G%
+ */
 public class Solver {
 
 	public int N;
@@ -12,28 +19,39 @@ public class Solver {
 	public Stack<Move> moves;
 	public ArrayList<Group> groups;
 
+	/**
+	 * Sets N to 9.
+	 */
 	public Solver() {
 		groups = new ArrayList<Group>();
 		moves = new Stack<Move>();
 		N = 9;
 	}
 
+	/**
+	 * Uses a combination of logic and guessing to solve a board. Runs until the board is solved.
+	 */
 	public void solve() {
-		//for (int i = 0; i < 3; i ++) System.out.println(grid[0][0].groups.get(i).toString());
-		int counter = 0;
+		// for (int i = 0; i < 3; i ++)
+		// System.out.println(grid[0][0].groups.get(i).toString());
+		int counter = 0; // to prevent looping forever while testing
 		while (!solved() && counter++ < 500) {
 			reducePossibilites();
+			fillEasyCells();
 			// we've done goofed if there's an empty cell with 0 possiblities
-			// if (!sanityCheck()) {
-			// backtrack();
-			// }
-			// while (fillEasyCells()) { // fillEasyCells returns false if
+			if (!sanityCheck()) {
+				System.out.println("Sanity check failed!");
+				backtrack();
+			}
+			//while (fillEasyCells()) {} // fillEasyCells returns false if
 			// // there's
 			// // nothing else to fill in
-			// System.out.println("------");
+			
+				// System.out.println("------");
 			// print();
 			// System.out.println("------");
 			// }
+				
 			// make a guess
 			guess();
 		}
@@ -43,12 +61,12 @@ public class Solver {
 		System.out.println("backtracking");
 		// pop stuff off the stack until we get to something that was a guess
 		Move m = moves.pop();
-		System.out.println("popped off " + m.loc);
+		System.out.println("popped off " + m.loc + " with value " + m.value);
 		int guessSave = m.value;
 		undoMove(m);
 		while (!m.guess) {
 			m = moves.pop();
-			System.out.println("popped off " + m.loc);
+			System.out.println("popped off " + m.loc + " with value " + m.value);
 			guessSave = m.value;
 			undoMove(m);
 		}
@@ -123,28 +141,30 @@ public class Solver {
 		// c.name);
 		if (c != null) {
 			// System.out.println("guess: " + c.name);
-			System.out.println(c.name + "'s groups are:");
-			for (int i = 0; i < c.groups.size(); i++) {
-				System.out.println(c.groups.get(i).toString());
-			}
-			System.out.println(c.name + "'s possible values are: ");
-			for (int i = 0; i < c.possibles.length; i++){
-				if (c.possibles[i])
-					System.out.print(i+1  + " ");
-			}
-			System.out.println("");
+			//System.out.println(c.name + "'s groups are:");
+			// for (int i = 0; i < c.groups.size(); i++) {
+			// System.out.println(c.groups.get(i).toString());
+			// }
+			//System.out.println(c.name + "'s possible values are: ");
+			// for (int i = 0; i < c.possibles.length; i++){
+			// if (c.possibles[i])
+			// System.out.print(i+1 + " ");
+			// }
+			// System.out.println("");
 			int cellguess = c.getGuess();
-			System.out.println("Solver.guess: " + c.name + " guessed "
-					+ cellguess);
-			
+			// System.out.println("Solver.guess: " + c.name + " guessed "
+			// + cellguess);
+
 			c.assignValue(cellguess);
+			
+			// add guess to stack
 			Move m = new Move();
 			m.guess = true;
 			m.value = c.value;
 			m.loc = c.name;
 			moves.push(m);
 		} else {
-			System.out.println("Solver.guess: firstUndetermined was null");
+			//System.out.println("Solver.guess: firstUndetermined was null");
 		}
 	}
 
@@ -225,7 +245,7 @@ public class Solver {
 	}
 
 	/**
-	 * Looks at each group in groups and calls Group.valid()
+	 * Looks at each group in groups and calls Group.valid(). A board if valid iff each of its groups is.
 	 * 
 	 * @return true if every group in this grid is valid. False if at least one
 	 *         is not.
@@ -273,18 +293,19 @@ public class Solver {
 			for (int j = 0; j < N; j++) {
 				int val = (int) (line.charAt(j) - '0');
 				if (0 < val && val <= N) {
-//					grid[i][j].value = val;
-//					grid[i][j].empty = false;
+					// grid[i][j].value = val;
+					// grid[i][j].empty = false;
 					grid[i][j].assignValue(val);
 					addMove(false, grid[i][j].value, grid[i][j].name);
-//					for (int k = 0; k < grid[i][j].groups.size(); k++) {
-//						Group g = grid[i][j].groups.get(k);
-//						g.groupVals[grid[i][j].value - 1] = true;
-//					}
+					// for (int k = 0; k < grid[i][j].groups.size(); k++) {
+					// Group g = grid[i][j].groups.get(k);
+					// g.groupVals[grid[i][j].value - 1] = true;
+					// }
 				}
 			}
 		}
-		//for (int i = 0; i < 3; i ++) System.out.println(grid[0][0].groups.get(i).toString());
+		// for (int i = 0; i < 3; i ++)
+		// System.out.println(grid[0][0].groups.get(i).toString());
 	}
 
 	/**
