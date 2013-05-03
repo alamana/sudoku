@@ -32,6 +32,7 @@ public class Solver {
 	 * board is solved.
 	 */
 	public boolean solve() {
+		
 		Cell c = findUnassignedCell();
 
 		if (c == null)

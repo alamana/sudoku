@@ -249,6 +249,16 @@ public class Cell {
 		value = 0;
 		empty = true;
 	}
+	
+	public String serialize(){
+		String ret = "";
+		for (int i = 0; i < possibles.length; i++){
+			
+		}
+		ret += "$";
+		
+		return ret;
+	}
 
 	// Looks the same as removeGuess.
 

@@ -2,12 +2,17 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 public class Sudoku  extends JFrame{
 
-	public static int n = 6;
+	public static int n = 3;
 	public static JPanel grid;
 	public static Cell[][] solution, puzzle, current;
+	/*
+	 * contains all empty cells of the grid in the form 1000*x + y (cannot handle values where n*n >= 1000)
+	 */
+	public static ArrayList<Integer> empty;
 	public static JPanel panel;
 	public static JPanel[] subgrid;
 	
@@ -16,6 +21,7 @@ public class Sudoku  extends JFrame{
 	}
 	
 	public void startUI() {
+		n = Integer.parseInt(JOptionPane.showInputDialog("Input n (standard Sudoku is n=3)"));
 		panel = new JPanel();
 	    getContentPane().add(panel);
 	    setTitle("NxN Sudoku");
@@ -32,10 +38,16 @@ public class Sudoku  extends JFrame{
 	    
 	    panel.add(buttonList, BorderLayout.EAST);
 	    
+	    empty = new ArrayList<Integer>();
+	    for(int x = 0; x < n; x++) {
+	    	for(int y = 0; y < n; y++) {
+	    		empty.add(1000*x+y);
+	    	}
+	    }
+	    
 	    JButton generateButton = new JButton("Generate");
 	    generateButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent event) {
-	    		n = Integer.parseInt(JOptionPane.showInputDialog("Input n (standard Sudoku is n=3)"));
 	    		grid.setLayout(new GridLayout(n, n, 10, 10));
 	    		puzzle = new Cell[n*n][n*n];
 	    		solution = new Cell[n*n][n*n];
@@ -47,19 +59,19 @@ public class Sudoku  extends JFrame{
 	    				current[x][y] = new Cell();
 	    			}
 	    		}
-	    		//fillGrid((700-(n*20))/(n*n));
-	    		/*panel.add(grid, BorderLayout.CENTER);
-	    		for(int i = 0; i < n*n; i++) {
-	    			grid.add(new JButton(""+i));
-	    		}*/
 	    	}
 	    });
 	    
 	    JButton hintButton = new JButton("Hint");
 	    hintButton.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent event) {
-	    		System.exit(0);
-	    	}
+	        	int spot = (int)(Math.random()*empty.size());
+	        	int temp = empty.get(spot);
+	        	empty.remove(spot);
+	        	int newX = temp/1000;
+	        	int newY = temp%1000;
+	        	JOptionPane.showMessageDialog(null, "Spot (" + newX + "," + newY + ") should be " + solution[newX][newY].value);
+	       	}
 	    });
 	    
 	    JButton quitButton = new JButton("Quit");
@@ -83,6 +95,20 @@ public class Sudoku  extends JFrame{
 				current[x][y] = new Cell();
 			}
 		}
+	    //ASSIGN SOLUTION HERE
+	    solution = solver.giveMeMyAnswerPlease(n);
+	    
+	    if(n > 1){
+	    	for(int i = 0; i < (n*n)-n; i++) {
+	    		int spot = (int)(Math.random()*empty.size());
+	    		int temp = empty.get(spot);
+	    		empty.remove(spot);
+	    		int newX = temp/1000;
+	    		int newY = temp%1000;
+	    		current[newX][newY].value = solution[newX][newY].value;
+	    	}
+	    }
+	    
 	    
 	    grid.setLayout(new GridLayout(n, n, 10, 10));
 	    
@@ -98,14 +124,15 @@ public class Sudoku  extends JFrame{
 					final int fx = n*((i)%n)+x;
 					final int fy = n*((i)/n)+y;
 					final JTextField square = new JTextField(""+current[fx][fy].value);
-					//button.setSize(buttonDim, buttonDim);
 				    square.addActionListener(new ActionListener() {
 				    	public void actionPerformed(ActionEvent event) {
-				    		//int temp = Integer.parseInt(JOptionPane.showInputDialog("Enter new value"));
 				    		int temp = Integer.parseInt(square.getText());
-				    		System.out.println("INSIDE FIELD: " + temp);
 				    		square.setText(""+temp);
 				    		current[fx][fy].value = temp;
+				    		validator.doSomeValidating();
+				    		if(it_validated) {
+				    			JOptionPane.showConfirmDialog(null, "Congragulations! \n You completed a " + n*n + " sudoku puzzle!");
+				    		}
 				    	}
 				    });
 				    //System.out.println(button.getWidth() + " " + button.getHeight());
@@ -117,7 +144,9 @@ public class Sudoku  extends JFrame{
 			panel.add(grid, BorderLayout.CENTER);
 		}
 	}
-	
+	/*
+	 * Does nothing right now
+	 */
 	public void fillGrid(int buttonDim) {
 		subgrid = new JPanel[n*n];
 		
