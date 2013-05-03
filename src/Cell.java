@@ -7,12 +7,16 @@ public class Cell {
 	public int possibles[];
 	public int size; // number of possible values for the cell
 	public int sizeBackup;
-	public int value;
+	public int value, oldValue;
 	public int name;
 	public boolean empty;
 	public ArrayList<Group> groups;
 	public int checksum;
 
+	/**
+	 * Initializes the cells' name to 0, empty to true, value to 0, size to N,
+	 * and initializes possibles[].
+	 */
 	Cell() {
 		name = 0;
 		empty = true;
@@ -27,7 +31,10 @@ public class Cell {
 		groups = new ArrayList<Group>();
 	}
 
-	public void adjustSize() { // prevents size from being less than 1
+	/**
+	 * Prevents size from being less than 1
+	 */
+	public void adjustSize() {
 		size = 0;
 		for (int i : possibles) {
 			if (i != 0)
@@ -35,8 +42,10 @@ public class Cell {
 		}
 	}
 
-	public boolean fill() { // meant to be called when there's only 1 possible
-							// value for the cell
+	/**
+	 * Meant to be called when there's only 1 possible value for the cell
+	 */
+	public boolean fill() {
 		boolean ret = false;
 		if (empty) {
 			for (int i = 0; i < possibles.length; i++) { // since there should
@@ -54,42 +63,38 @@ public class Cell {
 		return ret;
 	}
 
+	/**
+	 * Sets this cell's value to n.
+	 * 
+	 * @param n
+	 *            The value to be assigned to this cell.
+	 */
 	public void assignValue(int n) {
+		oldValue = value;
 		value = n;
 		sizeBackup = size;
 		size = 0;
-		// if (value == checksum) {
 		empty = false;
-		for (int j = 0; j < groups.size(); j++) { // set flags
-													// for
-													// groups
-			groups.get(j).groupVals[value - 1] = true; // groupVals
-														// is
-														// zero
-														// indexed
-		}
-		// }
+		for (int j = 0; j < groups.size(); j++)
+			groups.get(j).addValue(n);
 	}
 
-	public void assignGuess(int guess) {
-		sizeBackup = size;
-		size = 0;
-		empty = false;
-		value = guess;
-		for (Group g : groups) {
-			g.groupVals[value - 1] = true;
-		}
-	}
-
+	/**
+	 * Removes a guess that was made. Resets this cell's value to 0.
+	 */
 	public void removeGuess() {
 		size = sizeBackup;
-		empty = true;
+		this.removePossible(value);
+		checksum += value;
 		value = 0;
-		for (Group g : groups)
-			g.groupVals[value - 1] = false;
+		empty = true;
 	}
 
-	public int guess() {
+	/**
+	 * Returns a guess value using the first nonzero value in possibles[].
+	 * Returns -1 if no nonzero value is found.
+	 */
+	public int getGuess() {
 		for (int i = 0; i < possibles.length; i++) {
 			if (possibles[i] != 0)
 				return possibles[i];
@@ -97,6 +102,11 @@ public class Cell {
 		return -1;
 	}
 
+	/**
+	 * Looks the value each group this cell belongs to contains and removes any
+	 * values found in that group. Returns true if a change was made. False
+	 * otherwise.
+	 */
 	public boolean removePossibles() {
 		boolean ret = false;
 		for (Group g : groups) {
@@ -104,28 +114,41 @@ public class Cell {
 			for (int i = 0; i < list.length; i++) {
 				if (list[i]) {
 					ret = true;
-					checksum -= possibles[i];
-					possibles[i] = 0;
-					this.adjustSize();
+					this.removePossible(i + 1);
+					// checksum -= possibles[i];
+					// possibles[i] = 0;
+					// this.adjustSize();
 				}
 			}
 		}
 		return ret;
 	}
 
-	public void removePossible() {
-			for (Group g : groups) {
-				g.groupVals[value - 1] = false;
-			}
-			possibles[value - 1] = value;
-			value = 0;
-			empty = true;
-			this.adjustSize();
+	/**
+	 * Removes a possibility from possibles[], removes value from groups, and
+	 * adjusts size
+	 * 
+	 * @param Value
+	 *            to remove from this cell's list of possible values.
+	 */
+	public void removePossible(int n) {
+		for (Group g : groups) {
+			g.removeValue(n);
+		}
+		possibles[n - 1] = 0;
+		checksum -= n - 1;
+		this.adjustSize();
 	}
 
+	/**
+	 * Two cells are defined to be equal if they have the same name.
+	 * 
+	 * @param o
+	 *            Another cell
+	 * @return true if the cells have the same name. false if they do not.
+	 */
 	@Override
-	public boolean equals(Object o) { // two cells are equal if they have the
-										// same name
+	public boolean equals(Object o) {
 		Cell c = (Cell) o;
 		return (this.name == c.name);
 	}
@@ -143,14 +166,16 @@ public class Cell {
 		return ret;
 	}
 
-	public void undo() {
-		possibles[value - 1] = value;
-		empty = true;
-		size = sizeBackup;
-		checksum += value;
-		for (Group g : groups) {
-			g.groupVals[value - 1] = true;
-		}
-		value = 0;
-	}
+	// Looks the same as removeGuess.
+
+	// public void undo() {
+	// possibles[value - 1] = value;
+	// empty = true;
+	// size = sizeBackup;
+	// checksum += value;
+	// for (Group g : groups) {
+	// g.groupVals[value - 1] = true;
+	// }
+	// value = 0;
+	// }
 }

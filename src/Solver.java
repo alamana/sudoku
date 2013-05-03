@@ -20,12 +20,12 @@ public class Solver {
 
 	public void solve() {
 		int counter = 0;
-		while (!solved() && counter++ < 50) {
+		while (!solved() && counter++ < 500) {
+			reducePossibilites();
 			// we've done goofed if there's an empty cell with 0 possiblities
 			if (!sanityCheck()) {
 				backtrack();
 			}
-			reducePossibilites();
 			// while (fillEasyCells()) { // fillEasyCells returns false if
 			// // there's
 			// // nothing else to fill in
@@ -40,21 +40,34 @@ public class Solver {
 
 	public void backtrack() {
 		System.out.println("backtracking");
-		// pop stuff off the stack until we get to some that was a guess
+		// pop stuff off the stack until we get to something that was a guess
 		Move m = moves.pop();
+		System.out.println("popped off " + m.loc);
+		int guessSave = m.value;
 		undoMove(m);
 		while (!m.guess) {
 			m = moves.pop();
+			System.out.println("popped off " + m.loc);
+			guessSave = m.value;
 			undoMove(m);
 		}
 		int row = m.loc / 100;
 		int col = m.loc % 10;
 		Cell c = grid[row][col];
-		c.removePossible();
-		c.assignGuess(c.guess());
+		c.removePossible(guessSave);
+		System.out.println("going to give " + c.name + " a value of "
+				+ c.getGuess());
+		c.assignValue(c.getGuess());
+
 		addMove(true, c.value, c.name);
 	}
 
+	/**
+	 * Loops through the grid and sees if any cells are empty and have a size of
+	 * 0.
+	 * 
+	 * @return True if every cell passes the sanity check.
+	 */
 	public boolean sanityCheck() {
 		for (Cell[] cells : grid) {
 			for (Cell c : cells) {
@@ -68,6 +81,11 @@ public class Solver {
 		return true;
 	}
 
+	/**
+	 * A grid is solved if every cell has a value.
+	 * 
+	 * @return True if every cell is filled in.
+	 */
 	public boolean solved() {
 		for (Cell[] cells : grid)
 			for (Cell c : cells)
@@ -76,6 +94,12 @@ public class Solver {
 		return true;
 	}
 
+	/**
+	 * Calls reducePossiblities and then fills in each cell with only one
+	 * possible value. Cells are found via firstDetermined.
+	 * 
+	 * @return True if a cell was filled in.
+	 */
 	public boolean fillEasyCells() {
 		boolean ret = false;
 		reducePossibilites();
@@ -88,19 +112,35 @@ public class Solver {
 		return ret;
 	}
 
+	/**
+	 * Called when there are no more easy cells to fill in. Takes the first
+	 * undetermined cell and has it guess a value for itself.
+	 */
 	public void guess() {
 		Cell c = firstUndetermined();
 		if (c != null) {
 			System.out.println("guess: " + c.name);
-			c.assignGuess(c.guess());
+			c.assignValue(c.getGuess());
 			Move m = new Move();
 			m.guess = true;
 			m.value = c.value;
 			m.loc = c.name;
 			moves.push(m);
+		} else {
+			System.out.println("Solver.guess: firstUndetermined was null");
 		}
 	}
 
+	/**
+	 * Creates a new move and pushes it onto the stack.
+	 * 
+	 * @param guess
+	 *            True if the value was guessed.
+	 * @param value
+	 *            Value to give the cell.
+	 * @param loc
+	 *            Cell's location.
+	 */
 	public void addMove(boolean guess, int value, int loc) {
 		Move move = new Move();
 		move.guess = guess;
@@ -109,6 +149,11 @@ public class Solver {
 		moves.push(move);
 	}
 
+	/**
+	 * Searches through the grid and looks for the first empty cell.
+	 * 
+	 * @return The first empty cell.
+	 */
 	public Cell firstUndetermined() {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
@@ -120,6 +165,12 @@ public class Solver {
 		return null;
 	}
 
+	/**
+	 * Searches through the grid and looks for the first empty cell with only 1
+	 * possibility.
+	 * 
+	 * @return The first empty cell with size equal to 1.
+	 */
 	public Cell firstDetermined() {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
@@ -131,6 +182,9 @@ public class Solver {
 		return null;
 	}
 
+	/**
+	 * Removes all of the easy possibilities from cells in the grid.
+	 */
 	public void easyReduce() {
 		boolean reduced = true;
 		while (reduced) {
@@ -138,6 +192,10 @@ public class Solver {
 		}
 	}
 
+	/**
+	 * 
+	 * @return true if a possibility was changed. false if nothing changed.
+	 */
 	public boolean reducePossibilites() {
 		boolean ret = false;
 		for (int i = 0; i < N; i++) {
@@ -149,6 +207,12 @@ public class Solver {
 		return ret;
 	}
 
+	/**
+	 * Looks at each group in groups and calls Group.valid()
+	 * 
+	 * @return true if every group in this grid is valid. False if at least one
+	 *         is not.
+	 */
 	public boolean validGrid() {
 		for (Group g : groups) {
 			if (!g.valid())
@@ -157,6 +221,17 @@ public class Solver {
 		return true;
 	}
 
+	/**
+	 * Reads in a grid from a file. When reading, only accepts values between 1
+	 * and N as valid cell entries.
+	 * 
+	 * @param file
+	 *            Path to file to read.
+	 * @param size
+	 *            Dimension of the grid. Refers to the total number of cells per
+	 *            row or column.
+	 * 
+	 */
 	public void loadGrid(String file, int size) {
 		moves.clear();
 		this.filename = file;
@@ -193,11 +268,18 @@ public class Solver {
 		}
 	}
 
+	/**
+	 * Parses a move and then calls the corresponding cell's removeGuess()
+	 * method.
+	 * 
+	 * @param m
+	 *            Move to undo.
+	 */
 	public void undoMove(Move m) {
 		int loc = m.loc;
 		int col = loc % 10;
 		int row = loc / 100;
-		grid[row][col].undo();
+		grid[row][col].removeGuess();
 	}
 
 	public void makeGrid() {
@@ -257,6 +339,9 @@ public class Solver {
 		}
 	}
 
+	/**
+	 * Prints out the cell values in a grid.
+	 */
 	public void print() {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {

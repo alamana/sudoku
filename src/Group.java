@@ -11,28 +11,39 @@ public class Group extends ArrayList<Cell> {
 		type = "";
 		groupVals = new boolean[N]; // initializes to false
 	}
-
+/**
+ * Add the passed in cell to this group. Adjusts groupVals and then calls super.add. Always returns true.
+ * 
+ * @param c	Cell to be added
+ * @return true
+ */
 	public boolean add(Cell c) {
-		int val = c.value;
-		if (val != 0)
-			groupVals[val - 1] = true;
+		boolean status = this.addValue(c.value);
+		if (!status) System.out.println("Group.add: invalid add");
 		super.add(c);
 		return true;
 	}
 
+	/**
+	 * Removes a cell from this group. Always returns true.
+	 * 
+	 * @param c	Cell to be removed from this group.
+	 * @return
+	 */
 	public boolean remove(Cell c) {
 		// if (super.contains(c)) {
-		int val = c.value;
-		groupVals[val - 1] = false;
+		boolean status = this.removeValue(c.value);
+		if (!status) System.out.println("Group.add: invalid remove");
 		super.remove(c);
 		return true;
 		// }
 		// return false;
 	}
 
-	public boolean valid() { // returns true if the group doesn't contain any
-								// repeat values
-
+	/**
+	 * Returns true if the group doesn't contain any repeat values.
+	 */
+	public boolean valid() {
 		int possibles[] = new int[N]; // all 0
 
 		for (int i = 0; i < this.size(); i++) {
@@ -45,14 +56,48 @@ public class Group extends ArrayList<Cell> {
 		return true;
 	}
 
-	public boolean valid(int n) { // returns true if value n is not in the group
+	/**
+	 * Returns true if value n is not in the group.
+	 * 
+	 * @param n	Value to check
+	 */
+	public boolean valid(int n) {
 		return !groupVals[n - 1];
+	}
+
+	/**
+	 * Returns true if n was not a value of this group. False if it was.
+	 */
+	public boolean addValue(int n) {
+		boolean ret = false;
+		if (n > 0) {
+			ret = groupVals[n - 1];
+			if (!ret) {
+				groupVals[n - 1] = true;
+				ret = true;
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * Returns true if n was a value of this group.
+	 */
+	public boolean removeValue(int n) {
+		boolean ret = false;
+		if (n > 0) {
+			ret = groupVals[n - 1];
+			if (ret) {
+				groupVals[n - 1] = false;
+			}
+		}
+		return ret;
 	}
 
 	@Override
 	public String toString() {
 		String ret = type + ": ";
-		for (int i = 0; i < this.size(); i++){
+		for (int i = 0; i < this.size(); i++) {
 			ret += "(" + this.get(i).name + ", " + this.get(i).value + ") ";
 		}
 		return ret;
