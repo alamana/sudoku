@@ -322,8 +322,8 @@ public class Solver extends Stack<String> {
 	 * @param matrix
 	 *            Grid to solve
 	 */
-	public void loadGrid(Cell[][] matrix) {
-
+	public void loadGrid(Cell[][] matrix, int size) {
+		N = size;
 		makeGrid();
 
 		for (int i = 0; i < N; i++) {
