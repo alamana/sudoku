@@ -19,12 +19,14 @@ public class Cell {
 	public boolean empty;
 	public ArrayList<Group> groups;
 	public int checksum;
+	public int guessDepth;
 
 	/**
 	 * Initializes the cells' name to 0, empty to true, value to 0, size to N,
 	 * and initializes possibles[].
 	 */
 	Cell() {
+		guessDepth = -1;
 		name = 0;
 		empty = true;
 		value = 0;
@@ -139,22 +141,11 @@ public class Cell {
 		 * { if (possibles[i]) return i + 1; }
 		 */
 
-		boolean[] temp = new boolean[N];
-		// look through each of the cells groups and remove any values that the
-		// group already has
-		for (Group g : groups) {
-			for (int i = 0; i < g.groupVals.length; i++) {
-				if (g.groupVals[i]) {
-					temp[i] = true;
-				}
+		for (int i = 0; i < possibles.length; i++) {
+			if (possibles[i]) {
+				return i + 1;
 			}
 		}
-
-		for (int i = 0; i < temp.length; i++) {
-			if (!temp[i])
-				return i + 1;
-		}
-
 		return -1;
 	}
 
@@ -193,8 +184,8 @@ public class Cell {
 			System.out.println("TRYING TO REMOVE A VALUE LESS THAN 1");
 		}
 	}
-	
-	public void addPossible(int n){
+
+	public void addPossible(int n) {
 		if (n > 0) {
 			possibles[n - 1] = true;
 			checksum += n - 1;
@@ -300,7 +291,7 @@ public class Cell {
 		name = 0;
 		value = 0;
 		size = 0;
-		empty = true;		
+		empty = true;
 	}
 
 	// Looks the same as removeGuess.
