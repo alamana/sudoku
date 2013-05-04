@@ -4,19 +4,45 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
+/**
+ * GUI for Sudoku solver.
+ * 
+ * @author sjboris
+ * @author alamana
+ * 
+ */
 public class Sudoku extends JFrame {
 
+	/**
+	 * Size of the minor boxes. n^2 is the length of a side of the grid.
+	 */
 	public static int n = 3;
+
+	/**
+	 * Main grid to hold cells.
+	 */
 	public static JPanel grid;
+
+	/**
+	 * Cell[][] grid containing the solution/puzzle/current.
+	 */
 	public static Cell[][] solution, puzzle, current;
+
+	/**
+	 * Validates a solution.
+	 */
 	private static Validator v;
+
+	/**
+	 * Fills in cells on a grid.
+	 */
 	private static Solver s;
-	
+
 	/*
 	 * contains all empty cells of the grid in the form 1000*x + y (cannot
 	 * handle values where n*n >= 1000)
 	 */
-	
+
 	public static ArrayList<Integer> empty;
 	public static JPanel panel;
 	public static JPanel[] subgrid;
@@ -103,8 +129,9 @@ public class Sudoku extends JFrame {
 				current[x][y] = new Cell();
 			}
 		}
-		// ASSIGN SOLUTION HERE
-		solution = solver.giveMeMyAnswerPlease(n);
+		s.loadGrid(puzzle);
+		s.solve();
+		solution = s.getGridCopy();
 
 		if (n > 1) {
 			for (int i = 0; i < (n * n) - n; i++) {
@@ -137,8 +164,8 @@ public class Sudoku extends JFrame {
 							int temp = Integer.parseInt(square.getText());
 							square.setText("" + temp);
 							current[fx][fy].value = temp;
-							validator.doSomeValidating();
-							if (it_validated) {
+							boolean valid = v.validate(current);
+							if (valid) {
 								JOptionPane.showConfirmDialog(null,
 										"Congragulations! \n You completed a "
 												+ n * n + " sudoku puzzle!");

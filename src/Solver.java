@@ -316,6 +316,27 @@ public class Solver extends Stack<String> {
 	}
 
 	/**
+	 * Reads a passed in grid. When reading, only accepts values between 1 and N
+	 * as valid cell entries.
+	 * 
+	 * @param matrix
+	 *            Grid to solve
+	 */
+	public void loadGrid(Cell[][] matrix) {
+
+		makeGrid();
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				int val = matrix[i][j].value;
+				if (0 < val && val <= N) {
+					grid[i][j].assignValue(val);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Reads in a grid from a file. When reading, only accepts values between 1
 	 * and N as valid cell entries.
 	 * 
@@ -327,7 +348,6 @@ public class Solver extends Stack<String> {
 	 * 
 	 */
 	public void loadGrid(String file, int size) {
-		moveHistory.clear();
 		this.filename = file;
 		this.N = size;
 
@@ -356,8 +376,15 @@ public class Solver extends Stack<String> {
 		}
 	}
 
+	/**
+	 * Sets up the grid by initializing every cell and clearing groups, move
+	 * history, and the grid history.
+	 */
 	public void makeGrid() {
 		groups.clear();
+		this.clear();
+		moveHistory.clear();
+
 		grid = new Cell[N][N]; // want a new grid for each file
 
 		// initialize grid
@@ -446,5 +473,18 @@ public class Solver extends Stack<String> {
 			System.out.println("\tSize: " + cellparts[3]);
 			System.out.println("---------------------");
 		}
+	}
+
+	public Cell[][] getGridCopy() {
+		Cell[][] copy = new Cell[N][N];
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				copy[i][j] = new Cell();
+				copy[i][j].assignValue(grid[i][j].value);
+			}
+		}
+
+		return copy;
 	}
 }
