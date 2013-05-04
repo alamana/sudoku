@@ -129,7 +129,7 @@ public class Sudoku extends JFrame {
 				current[x][y] = new Cell();
 			}
 		}
-		s.loadGrid(puzzle);
+		s.loadGrid(puzzle, n * n);
 		s.solve();
 		solution = s.getGridCopy();
 
