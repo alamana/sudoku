@@ -123,7 +123,7 @@ public class Group extends ArrayList<Cell> {
 		boolean ret = false;
 		if (n > 0) {
 			ret = groupVals[n - 1];
-			if (!ret) {
+			if (true) { //!ret) {
 				for (Cell c : this) {
 					// if (c.value != n)
 					c.removePossible(n);

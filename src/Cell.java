@@ -41,7 +41,7 @@ public class Cell {
 	}
 
 	/**
-	 * Prevents size from being less than 1
+	 * Recalculates size every time.
 	 */
 	public void adjustSize() {
 		size = 0;
@@ -147,7 +147,7 @@ public class Cell {
 		
 		for (int i = 0; i < possibles.length; i++) {
 			if (possibles[i]) {
-				return i + 1;
+				return (i + 1);
 			}
 		}
 		return -1;
@@ -262,7 +262,7 @@ public class Cell {
 		ret += value + "$";
 
 		for (int i = 0; i < possibles.length; i++) {
-			if (possibles[i]) {
+			if (!possibles[i]) {
 				ret += (i + 1) + ",";
 			}
 		}
