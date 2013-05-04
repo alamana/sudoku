@@ -12,7 +12,7 @@ import java.util.Stack;
  */
 public class Solver extends Stack<String> {
 
-	private static boolean debug = false;
+	private static boolean debug = true;
 	public int N;
 	public String filename;
 	public Cell grid[][];
@@ -71,7 +71,6 @@ public class Solver extends Stack<String> {
 					print();
 				}
 				this.saveBoard(); // save before guess
-				// fillEasyCells();
 				c.assignValue(guessVal);
 				addMove(true, c.value, c.name);
 				if (debug) {
@@ -183,6 +182,13 @@ public class Solver extends Stack<String> {
 		}
 	}
 
+	/**
+	 * Searches for a group by name.
+	 * 
+	 * @param name
+	 *            Name of group to search for
+	 * @return Null if not found
+	 */
 	public Group findGroup(String name) {
 		for (Group g : groups) {
 			if (g.equals(name))
@@ -201,6 +207,20 @@ public class Solver extends Stack<String> {
 
 		// pop stuff off the stack until we get to something that was a guess
 		Move m = null;
+		if (moveHistory.empty()) {
+			// revert board to state before last guess
+			restoreGrid();
+
+			if (debug)
+				System.out.println(grid[2][1].toString());
+
+			int prevguess = m.value;
+			int row = m.loc / 100;
+			int col = m.loc % 10;
+
+			grid[row][col].removePossible(prevguess);
+			return false;
+		}
 		m = moveHistory.pop();
 		if (debug) {
 			System.out.println("popped off " + m.loc + " with value " + m.value

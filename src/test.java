@@ -11,7 +11,7 @@ public class test {
 	 */
 	public static void main(String[] args) {
 		Solver solver = new Solver();
-		solver.loadGrid("testFiles/hardest", 9);
+		solver.loadGrid("testFiles/unsolvable", 9);
 		solver.solve();
 		System.out.println("=========");
 		System.out.println("");

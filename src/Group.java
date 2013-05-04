@@ -43,6 +43,18 @@ public class Group extends ArrayList<Cell> {
 	}
 
 	/**
+	 * Counts the number of true values in groupVals
+	 */
+	public int size() {
+		int ret = 0;
+		for (boolean b : groupVals) {
+			if (b)
+				ret++;
+		}
+		return ret;
+	}
+
+	/**
 	 * type$groupVals$cellNames$name$ Cells and group values are separated with
 	 * commas
 	 */
