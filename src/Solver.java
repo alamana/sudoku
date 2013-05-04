@@ -27,28 +27,6 @@ public class Solver extends Stack<String> {
 		N = 9;
 	}
 
-	/**
-	 * Uses a combination of logic and guessing to solve a board. Runs until the
-	 * board is solved. Only use to test.
-	 */
-	public boolean solve() {
-
-		Cell c = findUnassignedCell();
-
-		if (c == null)
-			return true;
-
-		for (int n = 1; n <= N; n++) {
-			if (validGrid() && !c.conflict(n)) {
-				c.assignValue(n);
-				if (solve())
-					return true;
-				c.undoAssignment();
-			}
-		}
-		return false;
-	}
-
 	public boolean solveWithGroups() {
 		int counter = 100;
 		while (!solved() && counter-- > 0) {
