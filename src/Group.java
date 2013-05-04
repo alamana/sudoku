@@ -10,15 +10,35 @@ import java.util.ArrayList;
  */
 public class Group extends ArrayList<Cell> {
 
-	public int N = 9;
-	public boolean groupVals[]; // true if group contains value
+	/**
+	 * Number of values this group can hold.
+	 */
+	public int N;
+
+	/**
+	 * Array of size N. True in spot i means that this group contains value i+1.
+	 */
+	public boolean groupVals[];
+
+	/**
+	 * Available types are row, col, and block.
+	 */
 	public String type;
+
+	/**
+	 * Unique name for the group.
+	 */
 	public String name;
 
+	/**
+	 * Basic constructor. Sets type and name to "". Every entry in groupVals is
+	 * initialized to false. N is set to 9.
+	 */
 	public Group() {
 		super();
 		type = "";
 		name = "";
+		N = 9;
 		groupVals = new boolean[N]; // initializes to false
 	}
 
@@ -81,6 +101,9 @@ public class Group extends ArrayList<Cell> {
 		return true;
 	}
 
+	/**
+	 * Sets all of the group's values to false.
+	 */
 	public void resetGroupVals() {
 		for (boolean b : groupVals) {
 			b = false;
@@ -123,7 +146,7 @@ public class Group extends ArrayList<Cell> {
 		boolean ret = false;
 		if (n > 0) {
 			ret = groupVals[n - 1];
-			if (true) { //!ret) {
+			if (true) { // !ret) {
 				for (Cell c : this) {
 					// if (c.value != n)
 					c.removePossible(n);
@@ -169,6 +192,13 @@ public class Group extends ArrayList<Cell> {
 			return false;
 	}
 
+	/**
+	 * Two groups are considered to be equal if they have the same name.
+	 * 
+	 * @param s
+	 *            Other group name.
+	 * @return True if the two names are the same.
+	 */
 	public boolean equals(String s) {
 		if (this.name.equals(s))
 			return true;

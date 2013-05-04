@@ -5,34 +5,54 @@ import java.util.ArrayList;
  * 
  * @author sjboris
  * @author alamana
- * @version %I%, %G%
  */
 public class Cell {
 
-	public int N = 9;
+	/**
+	 * Max number of possible choices for this cell.
+	 */
+	public int N;
 
+	/**
+	 * True in the ith spot means that this cell could have a value of i+1.
+	 */
 	public boolean possibles[];
-	public int size; // number of possible values for the cell
-	public int sizeBackup;
-	public int value, oldValue;
+
+	/**
+	 * Number of possible values for this cell.
+	 */
+	public int size;
+
+	/**
+	 * Cell's value. 0 means unassigned.
+	 */
+	public int value;
+
+	/**
+	 * Unique. Defined as 100*row + column.
+	 */
 	public int name;
+
+	/**
+	 * True if the cell is empty.
+	 */
 	public boolean empty;
+
+	/**
+	 * List of groups that this cell belongs to.
+	 */
 	public ArrayList<Group> groups;
-	public int checksum;
-	public int guessCount;
 
 	/**
 	 * Initializes the cells' name to 0, empty to true, value to 0, size to N,
-	 * and initializes possibles[].
+	 * and initializes possibles[]. Sets N to 9.
 	 */
 	Cell() {
-		guessCount = -1;
+		N = 9;
 		name = 0;
 		empty = true;
 		value = 0;
 		size = N;
-		sizeBackup = size;
-		checksum = N * (N + 1) / 2;
 		possibles = new boolean[N];
 		for (int i = 0; i < N; i++) {
 			possibles[i] = true;
@@ -41,49 +61,19 @@ public class Cell {
 	}
 
 	/**
-	 * Recalculates size every time.
+	 * Recalculates size on every call. Size is the number the possibilities for
+	 * this cell.
 	 */
 	public void adjustSize() {
 		size = 0;
-		for (boolean i : possibles) {
-			if (i)
+		for (boolean b : possibles) {
+			if (b)
 				size++;
 		}
 	}
 
 	/**
-	 * 
-	 */
-	public int getDeterminedValue() {
-		int size = N;
-		boolean[] temp = new boolean[N];
-
-		// look through each of the cells groups and remove any values that the
-		// group already has
-		for (Group g : groups) {
-			for (int i = 0; i < g.groupVals.length; i++) {
-				if (g.groupVals[i]) { // if the group has the value
-					if (!temp[i]) // if we haven't already seen it
-						size--;
-					temp[i] = true;
-				}
-			}
-		}
-
-		if (size == 1) {
-			for (int i = 0; i < N; i++) {
-				if (!temp[i]) {
-					System.out.println("Cell.getDeterminedValue: returning "
-							+ (i + 1));
-					return i + 1; // there should only be one true cell
-				}
-			}
-		}
-		return -1;
-	}
-
-	/**
-	 * Meant to be called when there's only 1 possible value for the cell
+	 * Meant to be called when there's only 1 possible value for the cell.
 	 */
 	public boolean fill() {
 		boolean ret = false;
@@ -111,9 +101,7 @@ public class Cell {
 	 *            The value to be assigned to this cell.
 	 */
 	public void assignValue(int n) {
-		oldValue = value;
 		value = n;
-		sizeBackup = size;
 		size = 0;
 		empty = false;
 		for (int j = 0; j < groups.size(); j++)
@@ -121,30 +109,10 @@ public class Cell {
 	}
 
 	/**
-	 * Removes a guess that was made. Resets this cell's value to 0.
-	 */
-	public void removeGuess() {
-		size = sizeBackup;
-		this.removePossible(value);
-		checksum += value;
-		value = 0;
-		empty = true;
-	}
-
-	/**
 	 * Returns a guess value using the first nonzero value in possibles[].
 	 * Returns -1 if no nonzero value is found.
 	 */
 	public int getGuess() {
-		/*
-		 * // this.removePossibles(); for (int i = 0; i < possibles.length; i++)
-		 * { if (possibles[i]) return i + 1; }
-		 */
-
-		if (guessCount == -1){ // first guess
-			
-		}
-		
 		for (int i = 0; i < possibles.length; i++) {
 			if (possibles[i]) {
 				return (i + 1);
@@ -182,17 +150,6 @@ public class Cell {
 	public void removePossible(int n) {
 		if (n > 0) {
 			possibles[n - 1] = false;
-			checksum -= n - 1;
-			this.adjustSize();
-		} else {
-			System.out.println("TRYING TO REMOVE A VALUE LESS THAN 1");
-		}
-	}
-
-	public void addPossible(int n) {
-		if (n > 0) {
-			possibles[n - 1] = true;
-			checksum += n - 1;
 			this.adjustSize();
 		} else {
 			System.out.println("TRYING TO REMOVE A VALUE LESS THAN 1");
@@ -223,32 +180,6 @@ public class Cell {
 		}
 		ret += "]";
 		return ret;
-	}
-
-	/**
-	 * Returns true if n causes a conflict
-	 * 
-	 * @param n
-	 *            Value to check
-	 * 
-	 */
-	public boolean conflict(int n) {
-		for (Group g : groups) {
-			if (!g.valid(n))
-				return true;
-		}
-		return false;
-	}
-
-	public void undoAssignment() {
-		size = sizeBackup;
-		// checksum += value;
-		for (Group g : groups) {
-			g.removeValue(value);
-			// g.recalculateValues();
-		}
-		value = 0;
-		empty = true;
 	}
 
 	/**
@@ -284,12 +215,19 @@ public class Cell {
 		return ret;
 	}
 
+	/**
+	 * Sets each possibility to true.
+	 */
 	public void resetPossibles() {
 		for (int i = 0; i < N; i++) {
 			possibles[i] = true;
 		}
 	}
 
+	/**
+	 * Sets each possibility to true. Name, value, and size become 0. Empty
+	 * becomes true.
+	 */
 	public void reset() {
 		resetPossibles();
 		name = 0;
@@ -297,17 +235,4 @@ public class Cell {
 		size = 0;
 		empty = true;
 	}
-
-	// Looks the same as removeGuess.
-
-	// public void undo() {
-	// possibles[value - 1] = value;
-	// empty = true;
-	// size = sizeBackup;
-	// checksum += value;
-	// for (Group g : groups) {
-	// g.groupVals[value - 1] = true;
-	// }
-	// value = 0;
-	// }
 }

@@ -1,14 +1,17 @@
+/**
+ * Used to test Solver.java.
+ * 
+ * @author sjboris
+ * @author alamana
+ */
 public class test {
 
 	/**
-	 * @param args
+	 * Basic test method.
 	 */
 	public static void main(String[] args) {
 		Solver solver = new Solver();
-		solver.loadGrid("testFiles/backtrackingTest", 9);
-//		System.out.println("*********");
-//		solver.printInfo();
-//		System.out.println("*********");
+		solver.loadGrid("testFiles/medium1", 9);
 		solver.solve();
 		System.out.println("=========");
 		solver.print();

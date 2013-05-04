@@ -3,22 +3,48 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * Validates a Sudoku board. A board is considered valid if each row, column,
+ * and block do not contain any repeated values.
+ * 
+ * @author sjboris
+ * @author alamana
+ * 
+ */
 public class Validator {
 
-	int NUM_NUMBERS = 9;
+	/**
+	 * Number of values for a group of cells.
+	 */
+	public int NUM_NUMBERS;
 
-	char numbers[];
+	/**
+	 * Used to test rows, columns, and blocks.
+	 */
+	public char numbers[];
 
+	/**
+	 * Basic constructor. Sets NUM_NUMBERS to 9 and initializes numbers.
+	 */
 	Validator() {
+		NUM_NUMBERS = 9;
 		numbers = new char[NUM_NUMBERS];
 	}
 
+	/**
+	 * Fills numbers with values 1 through N
+	 */
 	void fill() {
 		for (int i = 1; i <= NUM_NUMBERS; i++) {
 			numbers[i - 1] = (char) ('0' + i);
 		}
 	}
 
+	/**
+	 * Use to check if numbers if empty.
+	 * 
+	 * @return True if numbers is empty.
+	 */
 	boolean empty() {
 		boolean ret = true;
 		for (int i = 1; i < NUM_NUMBERS; i++) {
@@ -30,6 +56,13 @@ public class Validator {
 		return ret;
 	}
 
+	/**
+	 * Reads a grid from a file and checks it.
+	 * 
+	 * @param filename
+	 *            File to read formatted grid from.
+	 * @return True if the file's grid is valid.
+	 */
 	boolean check(String filename) {
 		File f = new File(filename);
 		Scanner in = null;
@@ -104,6 +137,13 @@ public class Validator {
 		return true;
 	}
 
+	/**
+	 * Checks to see if the passed in grid is valid.
+	 * 
+	 * @param grid
+	 *            Cell[][] to read from.
+	 * @return True if the grid is valid.
+	 */
 	boolean validate(Cell[][] grid) {
 		// check rows
 		for (int i = 0; i < NUM_NUMBERS; i++) {

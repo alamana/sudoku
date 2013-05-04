@@ -28,13 +28,19 @@ public class Solver extends Stack<String> {
 		N = 9;
 	}
 
+	/**
+	 * Uses a combination of guessing and backtracking to fill in a puzzle.
+	 */
 	public boolean solve() {
 		int counter = 1000; // for debug purposes
 		print();
-		while (!solved() && counter-- > 0) {
-			if (debug)
+		while (!solved()) {
+			if (debug) {
 				System.out.println(counter);
-			// fillEasyCells();
+				counter--;
+				if (counter < 0)
+					break;
+			}
 
 			// make guess
 			Cell c = firstEmptyCell(); // firstUndetermined();
@@ -65,6 +71,7 @@ public class Solver extends Stack<String> {
 					print();
 				}
 				this.saveBoard(); // save before guess
+				// fillEasyCells();
 				c.assignValue(guessVal);
 				addMove(true, c.value, c.name);
 				if (debug) {
@@ -185,18 +192,6 @@ public class Solver extends Stack<String> {
 	}
 
 	/**
-	 * Uses row = m.loc/100 and col = m.loc%10 to find which grid spot m
-	 * corresponds to.
-	 */
-	public Cell getCell(Move m) {
-		Cell ret = null;
-		int row = m.loc / 100;
-		int col = m.loc % 10;
-		ret = grid[row][col];
-		return ret;
-	}
-
-	/**
 	 * Resets to the board to how it was before the last guess. Removes the
 	 * guess from cell's possibles[].
 	 */
@@ -230,30 +225,11 @@ public class Solver extends Stack<String> {
 		int col = m.loc % 10;
 
 		grid[row][col].removePossible(prevguess);
-		//int currguess = grid[row][col].getGuess();
+		// int currguess = grid[row][col].getGuess();
 		// if (currguess == -1) {
 		// // grid[row][col].addPossible(prevguess);
 		// backtrack();
 		// }
-		return true;
-	}
-
-	/**
-	 * Loops through the grid and sees if any cells are empty and have a size of
-	 * 0.
-	 * 
-	 * @return True if every cell passes the sanity check.
-	 */
-	public boolean sanityCheck() {
-		for (Cell[] cells : grid) {
-			for (Cell c : cells) {
-				if (c.empty && c.size == 0) {
-					// System.out.println("sanityCheck: " + c.name);
-					return false;
-				}
-			}
-		}
-		// System.out.println("sanity check returning true");
 		return true;
 	}
 
@@ -289,43 +265,6 @@ public class Solver extends Stack<String> {
 	}
 
 	/**
-	 * Called when there are no more easy cells to fill in. Takes the first
-	 * undetermined cell and has it guess a value for itself.
-	 */
-	public void guess() {
-		System.out.println("Guessing!");
-		Cell c = firstUndetermined();
-		if (c != null) {
-			System.out.println("Solver.guess: firstUndetermined returned "
-					+ c.name);
-			// System.out.println("guess: " + c.name);
-			// System.out.println(c.name + "'s groups are:");
-			// for (int i = 0; i < c.groups.size(); i++) {
-			// System.out.println(c.groups.get(i).toString());
-			// }
-			// System.out.println(c.name + "'s possible values are: ");
-			// for (int i = 0; i < c.possibles.length; i++){
-			// if (c.possibles[i])
-			// System.out.print(i+1 + " ");
-			// }
-			// System.out.println("");
-			int cellguess = c.getGuess();
-			System.out.println("Solver.guess: " + c.name + " guessed "
-					+ cellguess);
-			if (cellguess != -1) {
-				c.assignValue(cellguess);
-
-				// add guess to stack
-				addMove(true, c.value, c.name);
-			} else {
-				backtrack();
-			}
-		} else {
-			System.out.println("Solver.guess: firstUndetermined was null");
-		}
-	}
-
-	/**
 	 * Creates a new move and pushes it onto the stack.
 	 * 
 	 * @param guess
@@ -341,22 +280,6 @@ public class Solver extends Stack<String> {
 		move.value = value;
 		move.loc = loc;
 		moveHistory.push(move);
-	}
-
-	/**
-	 * Searches through the grid and looks for the first empty cell.
-	 * 
-	 * @return The first empty cell.
-	 */
-	public Cell firstUndetermined() {
-		for (int i = 0; i < N; i++) {
-			for (int j = 0; j < N; j++) {
-				if (grid[i][j].size > 0 && grid[i][j].empty) {
-					return grid[i][j];
-				}
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -377,6 +300,7 @@ public class Solver extends Stack<String> {
 	}
 
 	/**
+	 * Looks at each cell in the grid and calls Cell.removePossibles()
 	 * 
 	 * @return true if a possibility was changed. false if nothing changed.
 	 */
@@ -389,21 +313,6 @@ public class Solver extends Stack<String> {
 			}
 		}
 		return ret;
-	}
-
-	/**
-	 * Looks at each group in groups and calls Group.valid(). A board if valid
-	 * iff each of its groups is.
-	 * 
-	 * @return true if every group in this grid is valid. False if at least one
-	 *         is not.
-	 */
-	public boolean validGrid() {
-		for (Group g : groups) {
-			if (!g.valid())
-				return false;
-		}
-		return true;
 	}
 
 	/**
@@ -445,23 +354,6 @@ public class Solver extends Stack<String> {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Parses a move and then calls the corresponding cell's removeGuess()
-	 * method.
-	 * 
-	 * @param m
-	 *            Move to undo.
-	 */
-	public void undoMove(Move m) {
-		int loc = m.loc;
-		int col = loc % 10;
-		int row = loc / 100;
-		if (m.guess)
-			grid[row][col].removeGuess();
-		else
-			grid[row][col].undoAssignment();
 	}
 
 	public void makeGrid() {
@@ -509,10 +401,10 @@ public class Solver extends Stack<String> {
 			Group g = new Group();
 			g.type = "block";
 			g.name = "block" + z;
-			row = 3 * (z / 3);
-			for (int i = 1; i <= 3; i++) {
-				col = 3 * (z % 3);
-				for (int j = 1; j <= 3; j++) {
+			row = (int) (Math.sqrt(N) * (z / ((int) Math.sqrt(N))));
+			for (int i = 1; i <= (int) Math.sqrt(N); i++) {
+				col = (int) Math.sqrt(N) * (z % (int) Math.sqrt(N));
+				for (int j = 1; j <= (int) Math.sqrt(N); j++) {
 					// System.out.println(z + " " + row + " " + col);
 					g.add(grid[row][col]);
 					grid[row][col].groups.add(g);
