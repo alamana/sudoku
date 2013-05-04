@@ -6,7 +6,7 @@ public class test {
 	public static void main(String[] args) {
 		Solver solver = new Solver();
 		solver.loadGrid("testFiles/backtrackingTest", 9);
-		solver.solve();
+		solver.solveWithGroups();
 		solver.print();
 		Validator v = new Validator();
 		System.out.print(v.validate(solver.grid));

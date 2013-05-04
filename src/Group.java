@@ -13,11 +13,41 @@ public class Group extends ArrayList<Cell> {
 	public int N = 9;
 	public boolean groupVals[]; // true if group contains value
 	public String type;
+	public String name;
 
 	public Group() {
 		super();
 		type = "";
+		name = "";
 		groupVals = new boolean[N]; // initializes to false
+	}
+
+	/**
+	 * type$groupVals$cellNames$name$ Cells and group values are separated with
+	 * commas
+	 */
+	public String serialize() {
+		String ret = "group$";
+
+		ret += type + "$";
+
+		for (int i = 0; i < groupVals.length; i++) {
+			if (groupVals[i]) {
+				ret += i + ",";
+			}
+		}
+		ret += "$";
+
+		for (int i = 0; i < this.size(); i++) {
+			Cell c = this.get(i);
+			ret += c.name + ",";
+		}
+		ret += "$";
+
+		ret += name;
+		ret += "$";
+
+		return ret;
 	}
 
 	/**
@@ -49,6 +79,12 @@ public class Group extends ArrayList<Cell> {
 			System.out.println("Group.add: invalid remove");
 		super.remove(c);
 		return true;
+	}
+
+	public void resetGroupVals() {
+		for (boolean b : groupVals) {
+			b = false;
+		}
 	}
 
 	/**
@@ -118,5 +154,21 @@ public class Group extends ArrayList<Cell> {
 			ret += "(" + this.get(i).name + ", " + this.get(i).value + ") ";
 		}
 		return ret;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		Group other = (Group) o;
+		if (this.name.equals(other.name))
+			return true;
+		else
+			return false;
+	}
+
+	public boolean equals(String s) {
+		if (this.name.equals(s))
+			return true;
+		else
+			return false;
 	}
 }

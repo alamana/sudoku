@@ -71,7 +71,8 @@ public class Cell {
 		if (size == 1) {
 			for (int i = 0; i < N; i++) {
 				if (!temp[i]) {
-					System.out.println("Cell.getDeterminedValue: returning " + (i+1));
+					System.out.println("Cell.getDeterminedValue: returning "
+							+ (i + 1));
 					return i + 1; // there should only be one true cell
 				}
 			}
@@ -170,9 +171,6 @@ public class Cell {
 				if (list[i]) {
 					ret = true;
 					this.removePossible(i + 1);
-					// checksum -= possibles[i];
-					// possibles[i] = 0;
-					// this.adjustSize();
 				}
 			}
 		}
@@ -187,9 +185,6 @@ public class Cell {
 	 *            to remove from this cell's list of possible values.
 	 */
 	public void removePossible(int n) {
-		// for (Group g : groups) {
-		// g.removeValue(n);
-		// }
 		if (n > 0) {
 			possibles[n - 1] = false;
 			checksum -= n - 1;
@@ -224,15 +219,16 @@ public class Cell {
 		ret += "]";
 		return ret;
 	}
-	
+
 	/**
 	 * Returns true if n causes a conflict
 	 * 
-	 * @param n Value to check
-	 *
+	 * @param n
+	 *            Value to check
+	 * 
 	 */
-	public boolean conflict(int n){
-		for (Group g : groups){
+	public boolean conflict(int n) {
+		for (Group g : groups) {
 			if (!g.valid(n))
 				return true;
 		}
@@ -241,7 +237,7 @@ public class Cell {
 
 	public void undoAssignment() {
 		size = sizeBackup;
-		//checksum += value;
+		// checksum += value;
 		for (Group g : groups) {
 			g.removeValue(value);
 			// g.recalculateValues();
@@ -249,15 +245,52 @@ public class Cell {
 		value = 0;
 		empty = true;
 	}
-	
-	public String serialize(){
-		String ret = "";
-		for (int i = 0; i < possibles.length; i++){
-			
+
+	/**
+	 * Creates a string representing the cell. Format is
+	 * 'value$possibles$empty$size$name$'. Possibles are separated with commas
+	 * 
+	 */
+	public String serialize() {
+		String ret = "cell$";
+
+		ret += value + "$";
+
+		for (int i = 0; i < possibles.length; i++) {
+			if (!possibles[i]) {
+				ret += (i + 1) + ",";
+			}
 		}
 		ret += "$";
-		
+
+		if (empty) {
+			ret += "0";
+		} else {
+			ret += "1";
+		}
+		ret += "$";
+
+		ret += size;
+		ret += "$";
+
+		ret += name;
+		ret += "$";
+
 		return ret;
+	}
+
+	public void resetPossibles() {
+		for (int i = 0; i < N; i++) {
+			possibles[i] = true;
+		}
+	}
+
+	public void reset() {
+		resetPossibles();
+		name = 0;
+		value = 0;
+		size = 0;
+		empty = true;		
 	}
 
 	// Looks the same as removeGuess.

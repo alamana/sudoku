@@ -10,7 +10,7 @@ import java.util.Stack;
  * @author sjboris
  * @author alamana
  */
-public class Solver {
+public class Solver extends Stack<String> {
 
 	public int N;
 	public String filename;
@@ -29,17 +29,17 @@ public class Solver {
 
 	/**
 	 * Uses a combination of logic and guessing to solve a board. Runs until the
-	 * board is solved.
+	 * board is solved. Only use to test.
 	 */
 	public boolean solve() {
-		
+
 		Cell c = findUnassignedCell();
 
 		if (c == null)
 			return true;
 
 		for (int n = 1; n <= N; n++) {
-			if (validGrid() && !c.conflict(n)){
+			if (validGrid() && !c.conflict(n)) {
 				c.assignValue(n);
 				if (solve())
 					return true;
@@ -49,6 +49,34 @@ public class Solver {
 		return false;
 	}
 
+	public boolean solveWithGroups() {
+		int counter = 100;
+		while (!solved() && counter-- > 0) {
+			System.out.println(counter);
+			fillEasyCells();
+
+			// make guess
+			Cell c = firstUndetermined();
+			if (c == null)
+				return true;
+
+			int guessVal = c.getGuess();
+
+			if (guessVal == -1) { // board is no longer valid
+				backtrack();
+			} else {
+				this.saveBoard(); // save before guess
+				c.assignValue(guessVal);
+				addMove(true, c.value, c.name);
+			}
+
+		}
+		return true;
+	}
+
+	/**
+	 * Finds the first empty cell.
+	 */
 	public Cell findUnassignedCell() {
 		Cell ret = null;
 
@@ -64,12 +92,95 @@ public class Solver {
 	}
 
 	/**
+	 * cells#groups# Cells and groups are separated with '&'
+	 */
+	public void saveBoard() {
+		String ret = "";
+
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				ret += grid[i][j].serialize();
+				ret += "&";
+			}
+		}
+		ret += "#";
+
+		for (int i = 0; i < groups.size(); i++) {
+			ret += groups.get(i).serialize();
+			ret += "&";
+		}
+		ret += "#";
+
+		this.push(ret);
+	}
+
+	/**
+	 * Restores the board to the most recently saved state.
+	 */
+	public void restoreBoard() {
+		String save = this.pop();
+		String parts[] = save.split("#");
+
+		// restore cells
+		String cells[] = parts[0].split("&");
+		for (int i = 0; i < cells.length; i++) {
+			String pieces[] = cells[i].split("$");
+
+			int value = Integer.parseInt(pieces[0]);
+
+			int name = Integer.parseInt(pieces[4]);
+			int row = name / 100;
+			int col = name % 10;
+			Cell c = grid[row][col];
+			c.reset();
+			c.name = row * 100 + col;
+			c.value = value;
+
+			String possibles[] = pieces[1].split(",");
+			for (int j = 0; j < possibles.length; j++) {
+				int possible = Integer.parseInt(possibles[i]);
+				c.removePossible(possible);
+			}
+
+			boolean empty = true;
+			if (pieces[2].equals("1")) {
+				empty = true;
+			}
+			c.empty = empty;
+
+			int size = Integer.parseInt(pieces[3]);
+			c.size = size;
+		}
+
+		// restore groups
+		String Groups[] = parts[1].split("&");
+		for (int i = 0; i < Groups.length; i++) {
+			String desc = Groups[i];
+			String groupParts[] = desc.split("$");
+			String groupname = groupParts[3];
+			
+			Group g = findGroup(groupname);
+			
+			g.resetGroupVals();
+			String groupvalues[] = groupParts[1].split(",");
+			for (int j = 0; j < groupvalues.length; j++) {
+				int val = Integer.parseInt(groupvalues[i]);
+				g.groupVals[val] = true;
+			}
+		}
+	}
+
+	public Group findGroup(String name) {
+		for (Group g : groups) {
+			if (g.equals(name))
+				return g;
+		}
+		return null;
+	}
+
+	/**
 	 * Uses row = m.loc/100 and col = m.loc%10 to find which grid spot m
 	 * corresponds to.
-	 * 
-	 * @param m
-	 *            Move we want to find a cell for.
-	 * @return The cell corresponding to m's location.
 	 */
 	public Cell getCell(Move m) {
 		Cell ret = null;
@@ -198,11 +309,7 @@ public class Solver {
 				c.assignValue(cellguess);
 
 				// add guess to stack
-				Move m = new Move();
-				m.guess = true;
-				m.value = c.value;
-				m.loc = c.name;
-				moveHistory.push(m);
+				addMove(true, c.value, c.name);
 			} else {
 				backtrack();
 			}
@@ -260,16 +367,6 @@ public class Solver {
 			}
 		}
 		return null;
-	}
-
-	/**
-	 * Removes all of the easy possibilities from cells in the grid.
-	 */
-	public void easyReduce() {
-		boolean reduced = true;
-		while (reduced) {
-			reduced = reducePossibilites();
-		}
 	}
 
 	/**
@@ -378,6 +475,7 @@ public class Solver {
 		for (int i = 0; i < N; i++) {
 			Group g = new Group();
 			g.type = "row";
+			g.name = "row" + i;
 			for (int j = 0; j < N; j++) { // add each cell in the row to the
 											// group
 				g.add(grid[i][j]);
@@ -390,6 +488,7 @@ public class Solver {
 		for (int j = 0; j < N; j++) {
 			Group g = new Group();
 			g.type = "col";
+			g.name = "col" + j;
 			for (int i = 0; i < N; i++) {
 				g.add(grid[i][j]);
 				grid[i][j].groups.add(g);
@@ -402,6 +501,7 @@ public class Solver {
 		for (int z = 0; z < N; z++) {
 			Group g = new Group();
 			g.type = "block";
+			g.name = "block" + z;
 			row = 3 * (z / 3);
 			for (int i = 1; i <= 3; i++) {
 				col = 3 * (z % 3);
