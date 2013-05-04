@@ -193,6 +193,16 @@ public class Cell {
 			System.out.println("TRYING TO REMOVE A VALUE LESS THAN 1");
 		}
 	}
+	
+	public void addPossible(int n){
+		if (n > 0) {
+			possibles[n - 1] = true;
+			checksum += n - 1;
+			this.adjustSize();
+		} else {
+			System.out.println("TRYING TO REMOVE A VALUE LESS THAN 1");
+		}
+	}
 
 	/**
 	 * Two cells are defined to be equal if they have the same name.
@@ -252,12 +262,12 @@ public class Cell {
 	 * 
 	 */
 	public String serialize() {
-		String ret = "cell$";
+		String ret = "";
 
 		ret += value + "$";
 
 		for (int i = 0; i < possibles.length; i++) {
-			if (!possibles[i]) {
+			if (possibles[i]) {
 				ret += (i + 1) + ",";
 			}
 		}

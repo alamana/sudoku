@@ -27,25 +27,34 @@ public class Solver extends Stack<String> {
 		N = 9;
 	}
 
-	public boolean solveWithGroups() {
-		int counter = 100;
+	public boolean solve() {
+		int counter = 100; // for debug purposes
+		print();
 		while (!solved() && counter-- > 0) {
 			System.out.println(counter);
-			fillEasyCells();
+			// fillEasyCells();
 
 			// make guess
 			Cell c = firstUndetermined();
-			if (c == null)
+			if (c == null) // no more blank cells
 				return true;
 
 			int guessVal = c.getGuess();
 
 			if (guessVal == -1) { // board is no longer valid
+				System.out.println("Backtracking....this is what the board looks like before backtracking");
+				print();
 				backtrack();
+				System.out.println("Backtracking....this is what the board looks like after backtracking");
+				print();
 			} else {
+				System.out.println("Guessing....this is what the board looks like before guessing");
+				print();
 				this.saveBoard(); // save before guess
 				c.assignValue(guessVal);
 				addMove(true, c.value, c.name);
+				System.out.println("Guessing....this is what the board looks like after guessing");
+				print();
 			}
 
 		}
@@ -56,17 +65,14 @@ public class Solver extends Stack<String> {
 	 * Finds the first empty cell.
 	 */
 	public Cell findUnassignedCell() {
-		Cell ret = null;
-
-		for (int i = 0; i < N && ret == null; i++) {
-			for (int j = 0; j < N && ret == null; j++) {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
 				if (grid[i][j].empty) {
-					ret = grid[i][j];
+					return grid[i][j];
 				}
 			}
 		}
-
-		return ret;
+		return null;
 	}
 
 	/**
@@ -95,14 +101,14 @@ public class Solver extends Stack<String> {
 	/**
 	 * Restores the board to the most recently saved state.
 	 */
-	public void restoreBoard() {
+	public void restoreGrid() {
 		String save = this.pop();
 		String parts[] = save.split("#");
 
 		// restore cells
 		String cells[] = parts[0].split("&");
 		for (int i = 0; i < cells.length; i++) {
-			String pieces[] = cells[i].split("$");
+			String pieces[] = cells[i].split("\\$");
 
 			int value = Integer.parseInt(pieces[0]);
 
@@ -116,8 +122,10 @@ public class Solver extends Stack<String> {
 
 			String possibles[] = pieces[1].split(",");
 			for (int j = 0; j < possibles.length; j++) {
-				int possible = Integer.parseInt(possibles[i]);
-				c.removePossible(possible);
+				if (!possibles[j].equals("")) {
+					int possible = Integer.parseInt(possibles[j]);
+					c.removePossible(possible);
+				}
 			}
 
 			boolean empty = true;
@@ -134,16 +142,19 @@ public class Solver extends Stack<String> {
 		String Groups[] = parts[1].split("&");
 		for (int i = 0; i < Groups.length; i++) {
 			String desc = Groups[i];
-			String groupParts[] = desc.split("$");
+			String groupParts[] = desc.split("\\$");
 			String groupname = groupParts[3];
-			
+			System.out.println(groupname);
 			Group g = findGroup(groupname);
-			
+
 			g.resetGroupVals();
 			String groupvalues[] = groupParts[1].split(",");
 			for (int j = 0; j < groupvalues.length; j++) {
-				int val = Integer.parseInt(groupvalues[i]);
-				g.groupVals[val] = true;
+				System.out.println("GROUP : " + groupvalues[j]);
+				if (!groupvalues[j].equals("")) {
+					int val = Integer.parseInt(groupvalues[j]);
+					g.groupVals[val] = true;
+				}
 			}
 		}
 	}
@@ -168,6 +179,10 @@ public class Solver extends Stack<String> {
 		return ret;
 	}
 
+	/**
+	 * Resets to the board to how it was before the last guess. Removes the
+	 * guess from cell's possibles[].
+	 */
 	public boolean backtrack() {
 		System.out.println("backtracking");
 		// pop stuff off the stack until we get to something that was a guess
@@ -175,18 +190,18 @@ public class Solver extends Stack<String> {
 		m = moveHistory.pop();
 		System.out.println("popped off " + m.loc + " with value " + m.value
 				+ " and a guess value of " + m.guess);
-		int guessSave = m.value;
+		// int guessSave = m.value;
 
 		// undo m since we popped it off the stack
-		undoMove(m);
+		// undoMove(m);
 
 		while (!m.guess) { // loop until we find a guess
 			// if (!moveHistory.empty()) {
 			m = moveHistory.pop();
 			System.out.println("popped off " + m.loc + " with value " + m.value
 					+ " and a guess value of " + m.guess);
-			guessSave = m.value;
-			undoMove(m);
+			// guessSave = m.value;
+			// undoMove(m);
 			// } else {
 			// return false;
 			// }
@@ -206,6 +221,19 @@ public class Solver extends Stack<String> {
 		 * else { c.assignValue(c.getGuess()); addMove(true, c.value, c.name); }
 		 */
 
+		// revert board to state before last guess
+		restoreGrid();
+
+		int prevguess = m.value;
+		int row = m.loc / 100;
+		int col = m.loc % 10;
+
+		grid[row][col].removePossible(prevguess);
+		int currguess = grid[row][col].getGuess();
+		if (currguess == -1){
+			grid[row][col].addPossible(prevguess);
+			backtrack();
+		}
 		return true;
 	}
 
@@ -493,6 +521,8 @@ public class Solver extends Stack<String> {
 			}
 			groups.add(g);
 		}
+		// save it
+		saveBoard();
 	}
 
 	/**
@@ -504,6 +534,24 @@ public class Solver extends Stack<String> {
 				System.out.print(grid[i][j].value);
 			}
 			System.out.println("");
+		}
+		System.out.println("");
+	}
+	
+	public void printInfo(){
+		String latest = this.peek();
+		String hashparts[] = latest.split("#");
+		
+		// do cells
+		String cells[] = hashparts[0].split("&");
+		for (int i = 0; i < cells.length; i++){
+			String cellparts[] = cells[i].split("\\$");
+			System.out.println("Cell Name: " + cellparts[4]);
+			System.out.println("\tValue: " + cellparts[0]);
+			System.out.println("\tPossibles : " + cellparts[1]);
+			System.out.println("\tEmpty: " + cellparts[2]);
+			System.out.println("\tSize: " + cellparts[3]);
+			System.out.println("---------------------");
 		}
 	}
 }

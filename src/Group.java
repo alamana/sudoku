@@ -27,7 +27,7 @@ public class Group extends ArrayList<Cell> {
 	 * commas
 	 */
 	public String serialize() {
-		String ret = "group$";
+		String ret = "";
 
 		ret += type + "$";
 
