@@ -12,6 +12,7 @@ import java.util.Stack;
  */
 public class Solver extends Stack<String> {
 
+	private static boolean debug = false;
 	public int N;
 	public String filename;
 	public Cell grid[][];
@@ -31,37 +32,46 @@ public class Solver extends Stack<String> {
 		int counter = 1000; // for debug purposes
 		print();
 		while (!solved() && counter-- > 0) {
-			System.out.println(counter);
+			if (debug)
+				System.out.println(counter);
 			// fillEasyCells();
 
 			// make guess
-			Cell c = firstEmptyCell(); //firstUndetermined();
+			Cell c = firstEmptyCell(); // firstUndetermined();
 			if (c == null) { // no more blank cells
-				//backtrack();
-				//continue;
+				// backtrack();
+				// continue;
 				return true;
 			}
 			int guessVal = c.getGuess();
 
 			if (guessVal == -1) { // board is no longer valid
-				System.out
-						.println("Backtracking....this is what the board looks like before backtracking");
-				print();
+				if (debug) {
+					System.out
+							.println("Backtracking....this is what the board looks like before backtracking");
+					print();
+				}
 				backtrack();
-				System.out
-						.println("Backtracking....this is what the board looks like after backtracking");
-				print();
+				if (debug) {
+					System.out
+							.println("Backtracking....this is what the board looks like after backtracking");
+					print();
+				}
 			} else {
-				System.out
-						.println("Guessing....this is what the board looks like before guessing");
-				System.out.println(grid[2][1].toString());
-				print();
+				if (debug) {
+					System.out
+							.println("Guessing....this is what the board looks like before guessing");
+					System.out.println(grid[2][1].toString());
+					print();
+				}
 				this.saveBoard(); // save before guess
 				c.assignValue(guessVal);
 				addMove(true, c.value, c.name);
-				System.out
-						.println("Guessing....this is what the board looks like after guessing");
-				print();
+				if (debug) {
+					System.out
+							.println("Guessing....this is what the board looks like after guessing");
+					print();
+				}
 			}
 
 		}
@@ -151,13 +161,13 @@ public class Solver extends Stack<String> {
 			String desc = Groups[i];
 			String groupParts[] = desc.split("\\$");
 			String groupname = groupParts[3];
-			//System.out.println(groupname);
+			// System.out.println(groupname);
 			Group g = findGroup(groupname);
 
 			g.resetGroupVals();
 			String groupvalues[] = groupParts[1].split(",");
 			for (int j = 0; j < groupvalues.length; j++) {
-				//System.out.println("GROUP : " + groupvalues[j]);
+				// System.out.println("GROUP : " + groupvalues[j]);
 				if (!groupvalues[j].equals("")) {
 					int val = Integer.parseInt(groupvalues[j]);
 					g.groupVals[val] = true;
@@ -191,35 +201,40 @@ public class Solver extends Stack<String> {
 	 * guess from cell's possibles[].
 	 */
 	public boolean backtrack() {
-		System.out.println("backtracking");
-		
+		if (debug)
+			System.out.println("backtracking");
+
 		// pop stuff off the stack until we get to something that was a guess
 		Move m = null;
 		m = moveHistory.pop();
-		System.out.println("popped off " + m.loc + " with value " + m.value
-				+ " and a guess value of " + m.guess);
-		
-		while (!m.guess) { // loop until we find a guess
-			m = moveHistory.pop();
+		if (debug) {
 			System.out.println("popped off " + m.loc + " with value " + m.value
 					+ " and a guess value of " + m.guess);
+		}
+		while (!m.guess) { // loop until we find a guess
+			m = moveHistory.pop();
+			if (debug) {
+				System.out.println("popped off " + m.loc + " with value "
+						+ m.value + " and a guess value of " + m.guess);
+			}
 		}
 
 		// revert board to state before last guess
 		restoreGrid();
 
-		System.out.println(grid[2][1].toString());
-		
+		if (debug)
+			System.out.println(grid[2][1].toString());
+
 		int prevguess = m.value;
 		int row = m.loc / 100;
 		int col = m.loc % 10;
 
 		grid[row][col].removePossible(prevguess);
-		int currguess = grid[row][col].getGuess();
-		if (currguess == -1) {
-			// grid[row][col].addPossible(prevguess);
-			backtrack();
-		}
+		//int currguess = grid[row][col].getGuess();
+		// if (currguess == -1) {
+		// // grid[row][col].addPossible(prevguess);
+		// backtrack();
+		// }
 		return true;
 	}
 
