@@ -28,7 +28,7 @@ public class Solver extends Stack<String> {
 	}
 
 	public boolean solve() {
-		int counter = 100; // for debug purposes
+		int counter = 200; // for debug purposes
 		print();
 		while (!solved() && counter-- > 0) {
 			System.out.println(counter);
@@ -42,18 +42,22 @@ public class Solver extends Stack<String> {
 			int guessVal = c.getGuess();
 
 			if (guessVal == -1) { // board is no longer valid
-				System.out.println("Backtracking....this is what the board looks like before backtracking");
+				System.out
+						.println("Backtracking....this is what the board looks like before backtracking");
 				print();
 				backtrack();
-				System.out.println("Backtracking....this is what the board looks like after backtracking");
+				System.out
+						.println("Backtracking....this is what the board looks like after backtracking");
 				print();
 			} else {
-				System.out.println("Guessing....this is what the board looks like before guessing");
+				System.out
+						.println("Guessing....this is what the board looks like before guessing");
 				print();
 				this.saveBoard(); // save before guess
 				c.assignValue(guessVal);
 				addMove(true, c.value, c.name);
-				System.out.println("Guessing....this is what the board looks like after guessing");
+				System.out
+						.println("Guessing....this is what the board looks like after guessing");
 				print();
 			}
 
@@ -230,8 +234,8 @@ public class Solver extends Stack<String> {
 
 		grid[row][col].removePossible(prevguess);
 		int currguess = grid[row][col].getGuess();
-		if (currguess == -1){
-			grid[row][col].addPossible(prevguess);
+		if (currguess == -1) {
+			// grid[row][col].addPossible(prevguess);
 			backtrack();
 		}
 		return true;
@@ -537,14 +541,14 @@ public class Solver extends Stack<String> {
 		}
 		System.out.println("");
 	}
-	
-	public void printInfo(){
+
+	public void printInfo() {
 		String latest = this.peek();
 		String hashparts[] = latest.split("#");
-		
+
 		// do cells
 		String cells[] = hashparts[0].split("&");
-		for (int i = 0; i < cells.length; i++){
+		for (int i = 0; i < cells.length; i++) {
 			String cellparts[] = cells[i].split("\\$");
 			System.out.println("Cell Name: " + cellparts[4]);
 			System.out.println("\tValue: " + cellparts[0]);

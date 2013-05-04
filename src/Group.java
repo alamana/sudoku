@@ -125,6 +125,7 @@ public class Group extends ArrayList<Cell> {
 			ret = groupVals[n - 1];
 			if (!ret) {
 				for (Cell c : this) {
+					// if (c.value != n)
 					c.removePossible(n);
 				}
 				groupVals[n - 1] = true;

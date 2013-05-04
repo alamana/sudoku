@@ -19,14 +19,14 @@ public class Cell {
 	public boolean empty;
 	public ArrayList<Group> groups;
 	public int checksum;
-	public int guessDepth;
+	public int guessCount;
 
 	/**
 	 * Initializes the cells' name to 0, empty to true, value to 0, size to N,
 	 * and initializes possibles[].
 	 */
 	Cell() {
-		guessDepth = -1;
+		guessCount = -1;
 		name = 0;
 		empty = true;
 		value = 0;
@@ -141,6 +141,10 @@ public class Cell {
 		 * { if (possibles[i]) return i + 1; }
 		 */
 
+		if (guessCount == -1){ // first guess
+			
+		}
+		
 		for (int i = 0; i < possibles.length; i++) {
 			if (possibles[i]) {
 				return i + 1;
