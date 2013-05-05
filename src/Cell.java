@@ -78,13 +78,17 @@ public class Cell {
 	 * Meant to be called when there's only 1 possible value for the cell.
 	 */
 	public boolean fill() {
+		if (size != 1) {
+			System.out.println("Cell.fill: ERROR. SIZE != 1");
+			return false;
+		}
 		boolean ret = false;
 		if (empty) {
-			for (int i = 0; i < possibles.length; i++) { // since there should
-															// only be 1 nonzero
-															// entry in
-															// possibles
-				// we can take the first true value
+			/*
+			 * Since there should only be 1 nonzero entry in possibles we can
+			 * take the first true value
+			 */
+			for (int i = 0; i < possibles.length; i++) {
 				if (possibles[i]) {
 					this.assignValue(i + 1);
 					ret = true;
@@ -96,8 +100,8 @@ public class Cell {
 	}
 
 	/**
-	 * Sets this cell's value to n. Backs up value. Sets size to 0. Sets empty
-	 * to false.
+	 * Sets this cell's value to <code>n</code>. Backs up value. Sets size to
+	 * <code>0</code>. Sets empty to <code>false</code>.
 	 * 
 	 * @param n
 	 *            The value to be assigned to this cell.
@@ -140,14 +144,12 @@ public class Cell {
 	 */
 	public boolean removePossibles() {
 		boolean ret = false;
-		if (empty) {
-			for (Group g : groups) {
-				boolean list[] = g.groupVals;
-				for (int i = 0; i < list.length; i++) {
-					if (list[i]) {
-						ret = true;
-						this.removePossible(i + 1);
-					}
+		for (Group g : groups) {
+			boolean list[] = g.groupVals;
+			for (int i = 0; i < list.length; i++) {
+				if (list[i]) {
+					ret = true;
+					this.removePossible(i + 1);
 				}
 			}
 		}
@@ -164,8 +166,9 @@ public class Cell {
 	}
 
 	/**
-	 * Removes a possibility from possibles[], removes value from groups, and
-	 * adjusts size
+	 * Removes a possibility from <code>possibles[]</code> and adjusts size.
+	 * <code>possibles[]</code> is zero indexed, so the value set to false will
+	 * be <code>n-1</code>.
 	 * 
 	 * @param n
 	 *            to remove from this cell's list of possible values.
@@ -259,14 +262,14 @@ public class Cell {
 	}
 
 	/**
-	 *	Resets this cell. Has it's groups recalculate values. 
+	 * Resets this cell. Has it's groups recalculate values.
 	 */
 	public void unassign() {
 		int x = value;
 		reset();
-		for (Group g : groups){
+		for (Group g : groups) {
 			g.removeValue(x);
 		}
-		
+
 	}
 }

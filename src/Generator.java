@@ -4,7 +4,7 @@ import java.util.Random;
 /**
  * Generates a solvable Sudoku puzzle.
  * 
- * Might generate puzzles with multiple solutions.
+ * Note: Might generate puzzles with multiple solutions.
  * 
  * @author sjboris
  * @author alamana
@@ -96,7 +96,7 @@ public class Generator {
 	/**
 	 * Meant to be called after <code>generatePuzzle()</code>.
 	 * 
-	 * @param Number
+	 * @param N
 	 *            of cells on a side
 	 * @return A deep copy of completed puzzle
 	 */
@@ -114,7 +114,7 @@ public class Generator {
 	/**
 	 * Meant to be called after <code>generatePuzzle()</code>.
 	 * 
-	 * @param Number
+	 * @param N
 	 *            of cells on a side
 	 * @return A deep copy of partially completed puzzle
 	 */
@@ -167,7 +167,7 @@ public class Generator {
 
 		// solve the board then
 		s.loadGrid(puzzle, N);
-		s.solve();
+		System.out.println(s.solve());
 
 		solution = s.getGridCopy();
 		// copy solution to ret

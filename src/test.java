@@ -11,7 +11,7 @@ public class test {
 	 */
 	public static void main(String[] args) {
 		Solver solver = new Solver();
-		solver.loadGrid("testFiles/4x4/01", 16);
+		solver.loadGrid("testFiles/3x3/medium1", 9);
 		System.out.println("Initial board: ");
 		solver.print();
 		System.out.println("=========");
@@ -20,7 +20,7 @@ public class test {
 		System.out.println("");
 		solver.print();
 		Validator v = new Validator();
-		System.out.print(v.validate(solver.grid, 16));
+		System.out.print(v.validate(solver.grid, 9));
 	}
 
 }

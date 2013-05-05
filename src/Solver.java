@@ -12,12 +12,13 @@ import java.util.Stack;
  */
 public class Solver extends Stack<String> {
 
-	private static boolean debug = false;
+	private static boolean debug = true;
 	public int N;
 	public String filename;
 	public Cell grid[][];
 	public Stack<Move> moveHistory;
 	public ArrayList<Group> groups;
+	public Move lastMove;
 
 	/**
 	 * Sets N to 9.
@@ -36,14 +37,18 @@ public class Solver extends Stack<String> {
 		if (debug)
 			print();
 		fillEasyCells();
+		saveBoard();
 		if (debug)
 			print();
+
 		while (!solved()) {
 			if (debug) {
 				System.out.println(counter);
 				counter--;
-				if (counter < 0)
+				if (counter < 0) {
+					System.out.println("BREAKING BECAUSE OF COUNTER");
 					break;
+				}
 			}
 
 			// make guess
@@ -58,40 +63,47 @@ public class Solver extends Stack<String> {
 			int guessVal = c.getGuess();
 			if (guessVal == -1) { // board is no longer valid
 				if (debug) {
-					System.out
-							.println("Backtracking....this is what the board looks like before backtracking");
+					// System.out
+					// .println("Backtracking....this is what the board looks like before backtracking");
 					print();
 				}
 				backtrack();
 				if (debug) {
 					System.out
 							.println("Backtracking....this is what the board looks like after backtracking");
+					System.out.println(grid[0][4].toString());
+					System.out.println(grid[0][1].toString());
 					print();
 				}
 			} else {
 				if (debug) {
-					System.out
-							.println("Guessing....this is what the board looks like before guessing");
+					// System.out
+					// .println("Guessing....this is what the board looks like before guessing");
 					print();
 				}
-				this.saveBoard(); // save before guess
-				// boolean flag = true; // true if guess
-				// if (c.size == 1)
-				// flag = false;
+
+				/*
+				 * Save before guessing and doing logic based on guess
+				 */
+				saveBoard();
+
 				c.assignValue(guessVal);
-				// if (c.guessArrayFill() != N)
 				addMove(true, c.value, c.name);
 				if (debug) {
 					System.out
 							.println("Guessing....this is what the board looks like after guessing");
+					System.out.println(grid[0][4].toString());
+					System.out.println(grid[0][1].toString());
 					print();
 				}
-				// fillEasyCells(); // do logic after making guess
-				// if (debug) {
-				// System.out
-				// .println("This is what the board looks like after logic...");
-				// print();
-				// }
+				fillEasyCells();
+				if (debug) {
+					System.out
+							.println("This is what the board looks like after logic...");
+					System.out.println(grid[0][4].toString());
+					System.out.println(grid[0][1].toString());
+					print();
+				}
 			}
 
 		}
@@ -139,6 +151,7 @@ public class Solver extends Stack<String> {
 	 * Restores the board to the most recently saved state.
 	 */
 	public void restoreGrid() {
+		System.out.println("STACK SIZE: " + this.size());
 		String save = this.pop();
 		String parts[] = save.split("#");
 
@@ -233,6 +246,7 @@ public class Solver extends Stack<String> {
 		int row = m.loc / 100;
 		int col = m.loc % 10;
 		grid[row][col].removePossible(prevguess);
+		// saveBoard();
 
 		return true;
 	}
@@ -263,7 +277,7 @@ public class Solver extends Stack<String> {
 		while ((c = firstDetermined()) != null) {
 			ret = true;
 			c.fill();
-			addMove(false, c.value, c.name);
+			//addMove(false, c.value, c.name);
 		}
 		return ret;
 	}

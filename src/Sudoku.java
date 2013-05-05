@@ -92,11 +92,6 @@ public class Sudoku extends JFrame {
 				puzzle = g.getPartial(n * n);
 				solution = g.getSolution(n * n);
 				current = g.getPartial(n * n);
-				// for (int x = 0; x < n * n; x++) {
-				// for (int y = 0; y < n * n; y++) {
-				// current[x][y] = new Cell(n * n);
-				// }
-				// }
 			}
 		});
 
@@ -128,18 +123,6 @@ public class Sudoku extends JFrame {
 		puzzle = g.getPartial(n * n);
 		solution = g.getSolution(n * n);
 		current = g.getPartial(n * n);
-		// for (int x = 0; x < n * n; x++) {
-		// for (int y = 0; y < n * n; y++) {
-		// current[x][y] = new Cell(n * n);
-		// }
-		// }
-
-		/*
-		 * if (n > 1) { for (int i = 0; i < (n * n) - n; i++) { int spot = (int)
-		 * (Math.random() * empty.size()); int temp = empty.get(spot);
-		 * empty.remove(spot); int newX = temp / 1000; int newY = temp % 1000;
-		 * current[newX][newY].value = solution[newX][newY].value; } }
-		 */
 
 		grid.setLayout(new GridLayout(n, n, 10, 10));
 
