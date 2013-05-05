@@ -22,6 +22,28 @@ public class Generator {
 		v = new Validator();
 	}
 
+	public Cell[][] getSolvable(int N, int difficulty) {
+		System.out.println("Entering getSolvable");
+		Cell[][] potential = getValid(N, difficulty);
+
+		try {
+			s.loadGrid(potential, N);
+			s.solve();
+		} catch (Exception e) {
+			potential = getSolvable(N, difficulty);
+		}
+
+		return potential;
+	}
+
+	public Cell[][] getValid(int N, int difficulty) {
+		Cell[][] potential = generatePuzzle(N, difficulty);
+		while (!v.validate(potential)) {
+			potential = generatePuzzle(N, difficulty);
+		}
+		return potential;
+	}
+
 	/**
 	 * Works on the assumption that puzzles with more blanks are harder to
 	 * solve. Difficult of one means that
@@ -119,7 +141,8 @@ public class Generator {
 					if (debug)
 						System.out.println("Inside Loop: " + randVal);
 				}
-				randCell.assignValue(randVal);
+				if (counter < 9)
+					randCell.assignValue(randVal);
 			}
 		}
 
@@ -147,7 +170,8 @@ public class Generator {
 						randVal++;
 						counter++;
 					}
-					randCell.assignValue(randVal);
+					if (counter < 9)
+						randCell.assignValue(randVal);
 				}
 			}
 
@@ -177,7 +201,8 @@ public class Generator {
 						randVal++;
 						counter++;
 					}
-					randCell.assignValue(randVal);
+					if (counter < 9)
+						randCell.assignValue(randVal);
 				}
 			}
 

@@ -12,7 +12,7 @@ import java.util.Stack;
  */
 public class Solver extends Stack<String> {
 
-	private static boolean debug = true;
+	private static boolean debug = false;
 	public int N;
 	public String filename;
 	public Cell grid[][];

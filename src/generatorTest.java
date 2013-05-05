@@ -8,12 +8,13 @@ public class generatorTest {
 		Generator gen = new Generator();
 		
 		
-		Cell[][] puzz = gen.generatePuzzle(9, 1);
+		Cell[][] puzz = gen.getSolvable(9, 1);
 		System.out.println(v.validate(puzz));
 		System.out.println("---------");
 		s.loadGrid(puzz, 9);
 		s.print();
 		s.solve();
+		s.print();
 		
 	}
 
