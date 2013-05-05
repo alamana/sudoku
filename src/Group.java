@@ -63,9 +63,8 @@ public class Group extends ArrayList<Cell> {
 		ret += type + "$";
 
 		for (int i = 0; i < groupVals.length; i++) {
-			if (groupVals[i]) {
-				ret += i + ",";
-			}
+			ret += groupVals[i] + ",";
+			
 		}
 		ret += "$";
 

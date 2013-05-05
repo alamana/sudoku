@@ -13,6 +13,7 @@ import java.util.Stack;
 public class Solver extends Stack<String> {
 
 	private static boolean debug = true;
+	private static boolean logic = true;
 	public int N;
 	public String filename;
 	public Cell grid[][];
@@ -36,7 +37,12 @@ public class Solver extends Stack<String> {
 		int counter = 1000;
 		if (debug)
 			print();
+
+		/*
+		 * Doing logic in the beginning doesn't seem to break anything.
+		 */
 		fillEasyCells();
+
 		saveBoard();
 		if (debug)
 			print();
@@ -96,13 +102,15 @@ public class Solver extends Stack<String> {
 					System.out.println(grid[0][1].toString());
 					print();
 				}
-				fillEasyCells();
-				if (debug) {
-					System.out
-							.println("This is what the board looks like after logic...");
-					System.out.println(grid[0][4].toString());
-					System.out.println(grid[0][1].toString());
-					print();
+				if (logic) {
+					fillEasyCells();
+					if (debug) {
+						System.out
+								.println("This is what the board looks like after logic...");
+						System.out.println(grid[0][4].toString());
+						System.out.println(grid[0][1].toString());
+						print();
+					}
 				}
 			}
 
@@ -200,9 +208,8 @@ public class Solver extends Stack<String> {
 			String groupvalues[] = groupParts[1].split(",");
 			for (int j = 0; j < groupvalues.length; j++) {
 				// System.out.println("GROUP : " + groupvalues[j]);
-				if (!groupvalues[j].equals("")) {
-					int val = Integer.parseInt(groupvalues[j]);
-					g.groupVals[val] = true;
+				if (groupvalues[j].equals("true")) {
+					g.groupVals[j] = true;
 				}
 			}
 		}
@@ -277,7 +284,7 @@ public class Solver extends Stack<String> {
 		while ((c = firstDetermined()) != null) {
 			ret = true;
 			c.fill();
-			//addMove(false, c.value, c.name);
+			// addMove(false, c.value, c.name);
 		}
 		return ret;
 	}

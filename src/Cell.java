@@ -164,11 +164,10 @@ public class Cell {
 	public boolean removePossibles() {
 		boolean ret = false;
 		for (Group g : groups) {
-			boolean list[] = g.groupVals;
-			for (int i = 0; i < list.length; i++) {
-				if (list[i]) {
+			for (int i = 0; i < g.size(); i++) {
+				if (g.get(i).value > 0) {
 					ret = true;
-					//this.removePossible(i + 1);
+					this.removePossible(g.get(i).value);
 				}
 			}
 		}
