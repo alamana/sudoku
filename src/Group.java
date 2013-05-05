@@ -33,11 +33,11 @@ public class Group extends ArrayList<Cell> {
 	 * Basic constructor. Sets type and name to "". Every entry in groupVals is
 	 * initialized to false. N is set to 9.
 	 */
-	public Group() {
+	public Group(int size) {
 		super();
 		type = "";
 		name = "";
-		N = 9;
+		N = size;
 		groupVals = new boolean[N]; // initializes to false
 	}
 

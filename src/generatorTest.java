@@ -8,10 +8,10 @@ public class generatorTest {
 		Generator gen = new Generator();
 		
 		System.out.println("Generating...");
-		Cell[][] puzz = gen.getPuzzle(9, 3);
-		System.out.println(v.validate(puzz));
+		Cell[][] puzz = gen.getPuzzle(4, 3);
+		System.out.println(v.validate(puzz, 4));
 		System.out.println("---------");
-		s.loadGrid(puzz, 9);
+		s.loadGrid(puzz, 4);
 		s.print();
 		s.solve();
 		s.print();

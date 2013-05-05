@@ -48,8 +48,8 @@ public class Cell {
 	 * Initializes the cells' name to 0, empty to true, value to 0, size to N,
 	 * and initializes possibles[]. Sets N to 9.
 	 */
-	Cell() {
-		N = 9;
+	Cell(int size) {
+		N = size;
 		guessArray = new boolean[N];
 		name = 0;
 		empty = true;

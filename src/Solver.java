@@ -32,12 +32,12 @@ public class Solver extends Stack<String> {
 	 * Uses a combination of guessing and backtracking to fill in a puzzle.
 	 */
 	public boolean solve() {
-		int counter = 1000; // for debug purposes
-		// if (debug)
-		// print();
-		// fillEasyCells();
-		// if (debug)
-		// print();
+		int counter = 1000;
+		if (debug)
+			print();
+		fillEasyCells();
+		if (debug)
+			print();
 		while (!solved()) {
 			if (debug) {
 				System.out.println(counter);
@@ -220,29 +220,11 @@ public class Solver extends Stack<String> {
 
 		// pop stuff off the stack until we get to something that was a guess
 		Move m = null;
-		// if (moveHistory.empty()) {
-		// // revert board to state before last guess
-		// // restoreGrid();
-		//
-		// int prevguess = m.value;
-		// int row = m.loc / 100;
-		// int col = m.loc % 10;
-		//
-		// grid[row][col].removePossible(prevguess);
-		// return false;
-		// }
 		m = moveHistory.pop();
 		if (debug) {
 			System.out.println("popped off " + m.loc + " with value " + m.value
 					+ " and a guess value of " + m.guess);
 		}
-		// while (!m.guess) { // loop until we find a guess
-		// m = moveHistory.pop();
-		// if (debug) {
-		// System.out.println("popped off " + m.loc + " with value "
-		// + m.value + " and a guess value of " + m.guess);
-		// }
-		// }
 
 		// revert board to state before last guess
 		restoreGrid();
@@ -250,13 +232,8 @@ public class Solver extends Stack<String> {
 		int prevguess = m.value;
 		int row = m.loc / 100;
 		int col = m.loc % 10;
-
 		grid[row][col].removePossible(prevguess);
-		// int currguess = grid[row][col].getGuess();
-		// if (currguess == -1) {
-		// // grid[row][col].addPossible(prevguess);
-		// backtrack();
-		// }
+
 		return true;
 	}
 
@@ -419,7 +396,7 @@ public class Solver extends Stack<String> {
 		// initialize grid
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				grid[i][j] = new Cell();
+				grid[i][j] = new Cell(N);
 				grid[i][j].name = i * 100 + j;
 			}
 		}
@@ -428,7 +405,7 @@ public class Solver extends Stack<String> {
 
 		// a group for each row
 		for (int i = 0; i < N; i++) {
-			Group g = new Group();
+			Group g = new Group(N);
 			g.type = "row";
 			g.name = "row" + i;
 			for (int j = 0; j < N; j++) {
@@ -440,7 +417,7 @@ public class Solver extends Stack<String> {
 
 		// a group for each column
 		for (int j = 0; j < N; j++) {
-			Group g = new Group();
+			Group g = new Group(N);
 			g.type = "col";
 			g.name = "col" + j;
 			for (int i = 0; i < N; i++) {
@@ -453,7 +430,7 @@ public class Solver extends Stack<String> {
 		// a group for each block
 		int row = 0, col = 0;
 		for (int z = 0; z < N; z++) {
-			Group g = new Group();
+			Group g = new Group(N);
 			g.type = "block";
 			g.name = "block" + z;
 			row = (int) (Math.sqrt(N) * (z / ((int) Math.sqrt(N))));
@@ -477,7 +454,9 @@ public class Solver extends Stack<String> {
 	public void print() {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				System.out.print(grid[i][j].value);
+				if (grid[i][j].value <= 9)
+					System.out.print(" ");
+				System.out.print(grid[i][j].value + " ");
 			}
 			System.out.println("");
 		}
@@ -506,7 +485,7 @@ public class Solver extends Stack<String> {
 
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				copy[i][j] = new Cell();
+				copy[i][j] = new Cell(N);
 				copy[i][j].assignValue(grid[i][j].value);
 			}
 		}

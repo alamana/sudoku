@@ -16,27 +16,25 @@ public class Validator {
 	/**
 	 * Number of values for a group of cells.
 	 */
-	public int NUM_NUMBERS;
+	public int N;
 
 	/**
 	 * Used to test rows, columns, and blocks.
 	 */
-	public char numbers[];
+	public int numbers[];
 
 	/**
 	 * Basic constructor. Sets NUM_NUMBERS to 9 and initializes numbers.
 	 */
 	Validator() {
-		NUM_NUMBERS = 9;
-		numbers = new char[NUM_NUMBERS];
 	}
 
 	/**
 	 * Fills numbers with values 1 through N
 	 */
 	void fill() {
-		for (int i = 1; i <= NUM_NUMBERS; i++) {
-			numbers[i - 1] = (char) ('0' + i);
+		for (int i = 0; i < N; i++) {
+			numbers[i] = i + 1;
 		}
 	}
 
@@ -47,7 +45,7 @@ public class Validator {
 	 */
 	boolean empty() {
 		boolean ret = true;
-		for (int i = 1; i < NUM_NUMBERS; i++) {
+		for (int i = 1; i < N; i++) {
 			if (numbers[i - 1] != '0') {
 				ret = false;
 				break;
@@ -57,142 +55,76 @@ public class Validator {
 	}
 
 	/**
-	 * Reads a grid from a file and checks it.
-	 * 
-	 * @param filename
-	 *            File to read formatted grid from.
-	 * @return True if the file's grid is valid.
-	 */
-	boolean check(String filename) {
-		File f = new File(filename);
-		Scanner in = null;
-
-		try {
-			in = new Scanner(f);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		char grid[][] = new char[NUM_NUMBERS][NUM_NUMBERS];
-
-		// read in grid
-		for (int i = 0; i < NUM_NUMBERS; i++) {
-			String line = in.nextLine();
-			for (int j = 0; j < NUM_NUMBERS; j++) {
-				grid[i][j] = line.charAt(j);
-				// System.out.print(line.charAt(j));
-			}
-			// System.out.println("");
-		}
-
-		// check rows
-		for (int i = 0; i < NUM_NUMBERS; i++) {
-			fill();
-			for (int j = 0; j < NUM_NUMBERS; j++) {
-				char cell = grid[i][j];
-				int index = (int) (cell - '1');
-				// System.out.println("j=" + j + "   " + cell + " @ " + index);
-				if (index > 9 || index < 1)
-					return false;
-				if (numbers[index] != cell)
-					return false;
-				numbers[index] = '0';
-			}
-		}
-
-		// check columns
-		for (int j = 0; j < NUM_NUMBERS; j++) {
-			fill();
-			for (int i = 0; i < NUM_NUMBERS; i++) {
-				char cell = grid[i][j];
-				int index = (int) (cell - '1');
-				if (numbers[index] != cell)
-					return false;
-				numbers[index] = '0';
-			}
-		}
-
-		// check boxes
-		int row, col;
-		row = 0;
-		for (int z = 0; z < 9; z++) {
-			fill();
-			row = 3 * (z / 3);
-			for (int i = 1; i <= 3; i++) {
-				col = 3 * (z % 3);
-				for (int j = 1; j <= 3; j++) {
-					char cell = grid[row][col];
-					int index = (int) (cell - '1');
-					if (numbers[index] != cell)
-						return false;
-					numbers[index] = '0';
-					// System.out.print(grid[row][col]);
-					col++;
-				}
-				// System.out.print("\n");
-				row++;
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Checks to see if the passed in grid is valid.
+	 * Checks to see if the grid is valid. N is set here. numbers[] is
+	 * initialized here.
 	 * 
 	 * @param grid
 	 *            Cell[][] to read from.
 	 * @return True if the grid is valid.
 	 */
-	boolean validate(Cell[][] grid) {
+	boolean validate(Cell[][] grid, int size) {
+		N = size;
+		numbers = new int[N];
+
 		// check rows
-		for (int i = 0; i < NUM_NUMBERS; i++) {
+		for (int i = 0; i < N; i++) {
 			fill();
-			for (int j = 0; j < NUM_NUMBERS; j++) {
+			for (int j = 0; j < N; j++) {
 				int cell = grid[i][j].value;
 				int index = cell - 1;
 				if (index == -1)
 					continue;
 				// System.out.println("j=" + j + "   " + cell + " @ " + index);
-				if (index > 8 || index < 0)
+				if (index > N || index < 0) {
+					// System.out.println("Failed at " + i + " " + j + "\t"
+					// + numbers[index] + (numbers[index] != cell) + cell);
 					return false;
-				if ((numbers[index] - '0') != cell)
+				}
+				if (numbers[index] != cell) {
+					// System.out.println("Failed at " + i + " " + j + "\t"
+					// + numbers[index] + (numbers[index] != cell) + cell);
 					return false;
-				numbers[index] = '0';
+				}
+				numbers[index] = 0;
 			}
 		}
 
 		// check columns
-		for (int j = 0; j < NUM_NUMBERS; j++) {
+		for (int j = 0; j < N; j++) {
 			fill();
-			for (int i = 0; i < NUM_NUMBERS; i++) {
+			for (int i = 0; i < N; i++) {
 				int cell = grid[i][j].value;
 				int index = cell - 1;
 				if (index == -1)
 					continue;
-				if ((numbers[index] - '0') != cell)
+				if ((numbers[index]) != cell) {
+					// System.out.println("Failed at " + i + " " + j + "\t"
+					// + numbers[index] + " != " + cell);
 					return false;
-				numbers[index] = '0';
+				}
+				numbers[index] = 0;
 			}
 		}
 
 		// check boxes
 		int row, col;
 		row = 0;
-		for (int z = 0; z < 9; z++) {
+		for (int z = 0; z < N; z++) {
 			fill();
-			row = 3 * (z / 3);
-			for (int i = 1; i <= 3; i++) {
-				col = 3 * (z % 3);
-				for (int j = 1; j <= 3; j++) {
+			row = (int) (Math.sqrt(N) * (z / (int) Math.sqrt(N)));
+			for (int i = 1; i <= (int) Math.sqrt(N); i++) {
+				col = (int) Math.sqrt(N) * (z % (int) Math.sqrt(N));
+				for (int j = 1; j <= (int) Math.sqrt(N); j++) {
 					int cell = grid[row][col].value;
 					int index = cell - 1;
 					if (index == -1)
 						continue;
-					if ((numbers[index] - '0') != cell)
+					if ((numbers[index]) != cell) {
+						// System.out.println("Failed at " + i + " " + j + "\t"
+						// + numbers[index] + " != " + cell);
 						return false;
-					numbers[index] = '0';
-					// System.out.print(grid[row][col]);
+					}
+					numbers[index] = 0;
 					col++;
 				}
 				// System.out.print("\n");

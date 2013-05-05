@@ -36,7 +36,7 @@ public class Generator {
 		// initialize cells
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				grid[i][j] = new Cell();
+				grid[i][j] = new Cell(N);
 				grid[i][j].name = i * 100 + j;
 			}
 		}
@@ -45,7 +45,7 @@ public class Generator {
 
 		// a group for each row
 		for (int i = 0; i < N; i++) {
-			Group g = new Group();
+			Group g = new Group(N);
 			g.type = "row";
 			g.name = "row" + i;
 			for (int j = 0; j < N; j++) { // add each cell in the row to the
@@ -58,7 +58,7 @@ public class Generator {
 
 		// a group for each column
 		for (int j = 0; j < N; j++) {
-			Group g = new Group();
+			Group g = new Group(N);
 			g.type = "col";
 			g.name = "col" + j;
 			for (int i = 0; i < N; i++) {
@@ -71,7 +71,7 @@ public class Generator {
 		// a group for each block
 		int row = 0, col = 0;
 		for (int z = 0; z < N; z++) {
-			Group g = new Group();
+			Group g = new Group(N);
 			g.type = "block";
 			g.name = "block" + z;
 			row = (int) (Math.sqrt(N) * (z / ((int) Math.sqrt(N))));
@@ -137,15 +137,16 @@ public class Generator {
 
 		/*
 		 * If difficulty is equal to one, reduce the number of values in each
-		 * row to 5
+		 * row to ceiling(N/2)
 		 */
-		for (int z = N; z > 5; z--) {
+		int M = 1 + N / 2;
+		for (int z = N; z > M; z--) {
 			for (int row = 0; row < N; row++) {
 				int col = r.nextInt(N);
 				Cell c = ret[row][col];
 				while (c.empty) {
 					col++;
-					col = col % 9;
+					col = col % N;
 					c = ret[row][col];
 				}
 				c.unassign();
@@ -154,24 +155,28 @@ public class Generator {
 
 		/*
 		 * If difficulty is equal to two, reduce the number of values in each
-		 * row to 4.
+		 * row to sqrt(N).
 		 */
-
-		if (difficulty == 2) {
-			for (int row = 0; row < N; row++) {
-				int col = r.nextInt(N);
-				Cell c = ret[row][col];
-				while (c.empty) {
-					col++;
-					col = col % 9;
-					c = ret[row][col];
+		int sqrt = (int) Math.sqrt(N);
+		int diff = M - sqrt;
+		if (difficulty >= 2) {
+			for (int i = 0; i < diff; i++) {
+				for (int row = 0; row < N; row++) {
+					int col = r.nextInt(N);
+					Cell c = ret[row][col];
+					while (c.empty) {
+						col++;
+						col = col % N;
+						c = ret[row][col];
+					}
+					c.unassign();
 				}
-				c.unassign();
 			}
 		}
 
 		/*
-		 * If difficulty is equal to three, reduce the number of values to 3.
+		 * If difficulty is equal to three, reduce the number of values to
+		 * sqrt(N)-1.
 		 */
 		if (difficulty == 3) {
 			for (int row = 0; row < N; row++) {
@@ -179,7 +184,7 @@ public class Generator {
 				Cell c = ret[row][col];
 				while (c.empty) {
 					col++;
-					col = col % 9;
+					col = col % N;
 					c = ret[row][col];
 				}
 				c.unassign();

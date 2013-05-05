@@ -37,6 +37,11 @@ public class Sudoku extends JFrame {
 	 * Fills in cells on a grid.
 	 */
 	private static Solver s;
+	
+	/**
+	 * Makes puzzles
+	 */
+	private static Generator g;
 
 	/*
 	 * contains all empty cells of the grid in the form 1000*x + y (cannot
@@ -50,6 +55,7 @@ public class Sudoku extends JFrame {
 	public Sudoku() {
 		v = new Validator();
 		s = new Solver();
+		g = new Generator();
 		startUI();
 	}
 
