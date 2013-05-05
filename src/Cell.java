@@ -29,9 +29,19 @@ public class Cell {
 	public int value;
 
 	/**
-	 * Unique. Defined as <code>100*row + column</code>.
+	 * Unique. Defined using 10^floor(base 10 log of N).
 	 */
 	public int name;
+
+	/**
+	 * Cell's row in the board.
+	 */
+	public int row;
+
+	/**
+	 * Cell's column in the board.
+	 */
+	public int col;
 
 	/**
 	 * <code>true</code> if the cell is empty.
@@ -44,27 +54,24 @@ public class Cell {
 	public ArrayList<Group> groups;
 
 	/**
-	 * @deprecated
-	 */
-	public boolean guessArray[];
-
-	/**
 	 * Initializes the cells' name to <code>0</code>, empty to <code>true</code>
 	 * , value to <code>0</code>, <code>N</code> to <code>size</code>, and
 	 * initializes <code>possibles[]</code> so that each of its values is
 	 * <code>true</code>.
 	 * 
-	 * @param size
-	 *            Value for <code>N</code>
 	 */
-	Cell(int size) {
-		N = size;
-		guessArray = new boolean[N];
-		name = 0;
-		empty = true;
-		value = 0;
-		size = N;
-		possibles = new boolean[N];
+	Cell(int N, int row, int column) {
+		this.N = N;
+		this.col = column;
+		this.row = row;
+
+		int shift = (int) Math.floor(Math.log10(N));
+		this.name = this.row * shift + this.col;
+
+		this.empty = true;
+		this.value = 0;
+		this.size = N;
+		this.possibles = new boolean[N];
 		for (int i = 0; i < N; i++) {
 			possibles[i] = true;
 		}
@@ -119,24 +126,24 @@ public class Cell {
 	 *            The value to be assigned to this cell.
 	 */
 	public void assignValue(int n) {
-		guessArray[n - 1] = true;
 		value = n;
 		size = 0;
 		empty = false;
+		clearPossibles();
 		for (int j = 0; j < groups.size(); j++)
-			groups.get(j).addValue(n);
+			if (groups.get(j).addValue(n)) {
+				// System.out.println("Cells.assignValue: VALUE " + n +
+				// " ALREADY IN GROUP " + groups.get(j).name);
+			}
 	}
 
 	/**
-	 * @deprecated
+	 * Sets each entry in <code>possibles[]</code> to <code>false</code>
 	 */
-	public int guessArrayFill() {
-		int ret = 0;
-		for (boolean b : guessArray) {
-			if (b)
-				ret++;
+	public void clearPossibles() {
+		for (int i = 0; i < possibles.length; i++) {
+			possibles[i] = false;
 		}
-		return ret;
 	}
 
 	/**
@@ -165,7 +172,7 @@ public class Cell {
 		boolean ret = false;
 		for (Group g : groups) {
 			for (int i = 0; i < g.size(); i++) {
-				if (g.get(i).value > 0) {
+				if (g.get(i).value > 0 && g.get(i).value != this.value) {
 					ret = true;
 					this.removePossible(g.get(i).value);
 				}
@@ -235,7 +242,8 @@ public class Cell {
 
 	/**
 	 * Creates a string representing the cell. Format is
-	 * 'value$possibles$empty$size$name$'. Possibles are separated with commas
+	 * 'value$possibles$empty$size$name$row$col'. Possibles are separated with
+	 * commas
 	 * 
 	 */
 	public String serialize() {
@@ -244,9 +252,7 @@ public class Cell {
 		ret += value + "$";
 
 		for (int i = 0; i < possibles.length; i++) {
-			if (!possibles[i]) {
-				ret += (i + 1) + ",";
-			}
+			ret += possibles[i] + ",";
 		}
 		ret += "$";
 
@@ -262,6 +268,8 @@ public class Cell {
 
 		ret += name;
 		ret += "$";
+
+		ret += row + "$" + col;
 
 		return ret;
 	}
@@ -282,7 +290,7 @@ public class Cell {
 	public void reset() {
 		resetPossibles();
 		value = 0;
-		size = 9;
+		size = N;
 		empty = true;
 	}
 
@@ -296,5 +304,26 @@ public class Cell {
 			g.removeValue(x);
 		}
 
+	}
+
+	/**
+	 * Checks to see how many groups in this cell have n has a value. If there
+	 * is only one, remove n from possibles.
+	 */
+	public void tentativeRemove(int n) {
+		int num = 0;
+
+		for (Group g : groups) {
+			/*
+			 * Valid returns true if n is not in the group.
+			 */
+			if (!g.valid(n)) {
+				num++;
+			}
+		}
+
+		if (num == 0) {
+			this.removePossible(n);
+		}
 	}
 }

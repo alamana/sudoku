@@ -7,16 +7,28 @@ public class generatorTest {
 		Validator v = new Validator();
 		Generator gen = new Generator();
 
-		int N = 9;
+		Solver.setDebug(true);
+		Solver.setCounter(false, 35);
+		Solver.setLogic(true);
+		
+		int N = 16;
 		System.out.println("Generating...");
+		long startTime = System.nanoTime();
 		gen.generatePuzzle(N, 1);
+		long endTime = System.nanoTime();
 		Cell[][] puzz = gen.getPartial(N);
-		System.out.println(v.validate(puzz, N));
-		System.out.println("---------");
+		
+		for (int i = 0; i < 3*N-1; i++)
+			System.out.print("=");
+		System.out.println("");
+		
+		System.out.println("Puzzle generated in\n" + 1E-9*(endTime - startTime) + " seconds.");
+		
+		for (int i = 0; i < 3*N-1; i++)
+			System.out.print("=");
+		System.out.println("");
 		s.loadGrid(puzz, N);
-		//s.print();
-		s.solve();
-		//s.print();
+		s.print();
 
 	}
 

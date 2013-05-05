@@ -11,6 +11,11 @@ public class test {
 	 */
 	public static void main(String[] args) {
 		Solver solver = new Solver();
+		
+		Solver.setCounter(true, 1000);
+		Solver.setDebug(false);
+		Solver.setLogic(false);
+		
 		solver.loadGrid("testFiles/3x3/medium1", 9);
 		System.out.println("Initial board: ");
 		solver.print();

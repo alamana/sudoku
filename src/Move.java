@@ -9,7 +9,7 @@ public class Move {
 	/**
 	 * Move location
 	 */
-	public int loc;
+	public int row, col;
 
 	/**
 	 * Move value
@@ -25,7 +25,8 @@ public class Move {
 	 * Basic constructor. Sets loc and value to 0 and guess to false.
 	 */
 	public Move() {
-		loc = 0;
+		row = 0;
+		col = 0;
 		value = 0;
 		guess = false;
 	}

@@ -12,8 +12,6 @@ import java.util.Random;
  */
 public class Generator {
 
-	private static boolean debug = true;
-
 	private Solver s;
 	private Validator v;
 
@@ -41,8 +39,7 @@ public class Generator {
 		// initialize cells
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				grid[i][j] = new Cell(N);
-				grid[i][j].name = i * 100 + j;
+				grid[i][j] = new Cell(N, i, j);
 			}
 		}
 
@@ -104,7 +101,7 @@ public class Generator {
 		Cell[][] ret = new Cell[N][N];
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				ret[i][j] = new Cell(N);
+				ret[i][j] = new Cell(N, i, j);
 				ret[i][j].assignValue(solution[i][j].value);
 			}
 		}
@@ -122,7 +119,7 @@ public class Generator {
 		Cell[][] ret = new Cell[N][N];
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				ret[i][j] = new Cell(N);
+				ret[i][j] = new Cell(N, i, j);
 				if (puzzle[i][j].value != 0) {
 					ret[i][j].assignValue(puzzle[i][j].value);
 				}

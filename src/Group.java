@@ -64,7 +64,7 @@ public class Group extends ArrayList<Cell> {
 
 		for (int i = 0; i < groupVals.length; i++) {
 			ret += groupVals[i] + ",";
-			
+
 		}
 		ret += "$";
 
@@ -75,18 +75,17 @@ public class Group extends ArrayList<Cell> {
 		ret += "$";
 
 		ret += name;
-		ret += "$";
 
 		return ret;
 	}
 
 	/**
-	 * Add the passed in cell to this group. Adjusts groupVals and then calls
-	 * super.add. Always returns true.
+	 * Add the passed in cell to this group. Adjusts <code>groupVals</code> and
+	 * then calls <code>super.add</code>. Always returns <code>true</code>.
 	 * 
 	 * @param c
 	 *            Cell to be added
-	 * @return true
+	 * @return <code>true</code>
 	 */
 	public boolean addCell(Cell c) {
 		this.add(c);
@@ -98,22 +97,7 @@ public class Group extends ArrayList<Cell> {
 	}
 
 	/**
-	 * Removes a cell from this group. Always returns true.
-	 * 
-	 * @param c
-	 *            Cell to be removed from this group.
-	 * @return Always returns true.
-	 */
-	// public boolean remove(Cell c) {
-	// boolean status = this.removeValue(c.value);
-	// if (!status)
-	// System.out.println("Group.add: invalid remove");
-	// super.remove(c);
-	// return true;
-	// }
-
-	/**
-	 * Sets all of the group's values to false.
+	 * Sets all of the group's values to <code>false</code>.
 	 */
 	public void resetGroupVals() {
 		for (boolean b : groupVals) {
@@ -122,7 +106,7 @@ public class Group extends ArrayList<Cell> {
 	}
 
 	/**
-	 * Returns true if the group doesn't contain any repeat values.
+	 * @return <code>true</code> if the group doesn't contain any repeat values.
 	 */
 	public boolean valid() {
 		boolean possibles[] = new boolean[N]; // all false
@@ -141,7 +125,7 @@ public class Group extends ArrayList<Cell> {
 	}
 
 	/**
-	 * Returns true if value n is not in the group.
+	 * Returns true if value <code>n</code> is not in the group.
 	 * 
 	 * @param n
 	 *            Value to check
@@ -151,20 +135,24 @@ public class Group extends ArrayList<Cell> {
 	}
 
 	/**
-	 * Returns true if n was not a value of this group. False if it was.
+	 * @param n
+	 *            Value to add to the group
+	 * @return <code>true</code> if </code>n</code> was not a value of this
+	 *         group. <code>false</code> if it was.
 	 */
 	public boolean addValue(int n) {
 		boolean ret = false;
 		if (n > 0) {
 			ret = groupVals[n - 1];
-			if (true) { // !ret) {
-				for (Cell c : this) {
-					// if (c.value != n)
-					c.removePossible(n);
-				}
-				groupVals[n - 1] = true;
-				ret = true;
+			if (!this.valid()) {
+				System.out.println("Group.addValue: "
+						+ "GROUP IS BROKEN. TRYING TO ADD " + n + " to " + name);
 			}
+			for (Cell c : this) {
+				c.removePossible(n);
+			}
+			groupVals[n - 1] = true;
+			ret = true;
 		} else {
 			// System.out.println("Group.addValue: n less than 1");
 		}
@@ -172,7 +160,11 @@ public class Group extends ArrayList<Cell> {
 	}
 
 	/**
-	 * Returns true if n was a value of this group.
+	 * Remove <code>n</code> from this group's list of values. Calls
+	 * <code>tentativeRemove(n)</code> on each cell in this group.
+	 * 
+	 * @return <code>true</code> if <code>n</code> was a value of this group.
+	 *         <code>false</code> otherwise.
 	 */
 	public boolean removeValue(int n) {
 		boolean ret = false;
@@ -180,6 +172,12 @@ public class Group extends ArrayList<Cell> {
 			ret = groupVals[n - 1];
 			if (ret) {
 				groupVals[n - 1] = false;
+				for (Cell c : this) {
+					c.tentativeRemove(n);
+				}
+			} else {
+				System.out
+						.println("Group.removeValue: GROUP DID NOT CONTAIN THIS VALUE");
 			}
 		}
 		return ret;
