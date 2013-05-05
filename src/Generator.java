@@ -17,9 +17,14 @@ public class Generator {
 	private Solver s;
 	private Validator v;
 
+	public Cell[][] puzzle;
+	public Cell[][] solution;
+
 	public Generator() {
 		s = new Solver();
 		v = new Validator();
+		puzzle = null;
+		solution = null;
 	}
 
 	/**
@@ -89,27 +94,66 @@ public class Generator {
 	}
 
 	/**
-	 * Returns a partially completed Sudoku board. If the difficulty is 1, each
-	 * row will have five filled in values. If the difficulty is 2, each row
-	 * will have four filled in values. If the difficulty is 3, each row will
-	 * have three filled in values.
+	 * Meant to be called after <code>generatePuzzle()</code>.
+	 * 
+	 * @param Number
+	 *            of cells on a side
+	 * @return A deep copy of completed puzzle
+	 */
+	public Cell[][] getSolution(int N) {
+		Cell[][] ret = new Cell[N][N];
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				ret[i][j] = new Cell(N);
+				ret[i][j].assignValue(solution[i][j].value);
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * Meant to be called after <code>generatePuzzle()</code>.
+	 * 
+	 * @param Number
+	 *            of cells on a side
+	 * @return A deep copy of partially completed puzzle
+	 */
+	public Cell[][] getPartial(int N) {
+		Cell[][] ret = new Cell[N][N];
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				ret[i][j] = new Cell(N);
+				if (puzzle[i][j].value != 0) {
+					ret[i][j].assignValue(puzzle[i][j].value);
+				}
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * Initializes <code>puzzle</code> and <code>solution</code>. If the
+	 * difficulty is 1, each row will have five filled in values. If the
+	 * difficulty is 2, each row will have four filled in values. If the
+	 * difficulty is 3, each row will have three filled in values.
 	 * 
 	 * @param N
 	 *            Number of cells on a side of the board.
 	 * @param difficulty
 	 *            1 is the easiest, 3 is the hardest
 	 */
-	public Cell[][] getPuzzle(int N, int difficulty) {
-		Cell[][] ret = new Cell[N][N];
+	public void generatePuzzle(int N, int difficulty) {
+		puzzle = new Cell[N][N];
+		solution = new Cell[N][N];
 		ArrayList<Group> groups = new ArrayList<Group>();
 
-		initialize(ret, groups, N);
+		initialize(puzzle, groups, N);
 
 		// give random values to the main diagonal
 		Random r = new Random();
 
 		for (int i = 0; i < N; i++) {
-			Cell c = ret[i][i];
+			Cell c = puzzle[i][i];
 
 			int randVal = r.nextInt(N) + 1;
 			while (!c.validValue(randVal)) {
@@ -122,14 +166,14 @@ public class Generator {
 		}
 
 		// solve the board then
-		s.loadGrid(ret, N);
+		s.loadGrid(puzzle, N);
 		s.solve();
 
-		Cell[][] solution = s.getGridCopy();
+		solution = s.getGridCopy();
 		// copy solution to ret
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				Cell r1 = ret[i][j];
+				Cell r1 = puzzle[i][j];
 				Cell s = solution[i][j];
 				r1.assignValue(s.value);
 			}
@@ -143,11 +187,11 @@ public class Generator {
 		for (int z = N; z > M; z--) {
 			for (int row = 0; row < N; row++) {
 				int col = r.nextInt(N);
-				Cell c = ret[row][col];
+				Cell c = puzzle[row][col];
 				while (c.empty) {
 					col++;
 					col = col % N;
-					c = ret[row][col];
+					c = puzzle[row][col];
 				}
 				c.unassign();
 			}
@@ -163,11 +207,11 @@ public class Generator {
 			for (int i = 0; i < diff; i++) {
 				for (int row = 0; row < N; row++) {
 					int col = r.nextInt(N);
-					Cell c = ret[row][col];
+					Cell c = puzzle[row][col];
 					while (c.empty) {
 						col++;
 						col = col % N;
-						c = ret[row][col];
+						c = puzzle[row][col];
 					}
 					c.unassign();
 				}
@@ -175,22 +219,21 @@ public class Generator {
 		}
 
 		/*
-		 * If difficulty is equal to three, reduce the number of values to
-		 * sqrt(N)-1.
+		 * return puzzle;* If difficulty is equal to three, reduce the number of
+		 * values to sqrt(N)-1.
 		 */
 		if (difficulty == 3) {
 			for (int row = 0; row < N; row++) {
 				int col = r.nextInt(N);
-				Cell c = ret[row][col];
+				Cell c = puzzle[row][col];
 				while (c.empty) {
 					col++;
 					col = col % N;
-					c = ret[row][col];
+					c = puzzle[row][col];
 				}
 				c.unassign();
 			}
 		}
-		return ret;
 	}
 
 }

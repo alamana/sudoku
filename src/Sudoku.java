@@ -37,7 +37,7 @@ public class Sudoku extends JFrame {
 	 * Fills in cells on a grid.
 	 */
 	private static Solver s;
-	
+
 	/**
 	 * Makes puzzles
 	 */
@@ -88,16 +88,15 @@ public class Sudoku extends JFrame {
 		generateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
 				grid.setLayout(new GridLayout(n, n, 10, 10));
-				puzzle = new Cell[n * n][n * n];
-				solution = new Cell[n * n][n * n];
-				current = new Cell[n * n][n * n];
-				for (int x = 0; x < n * n; x++) {
-					for (int y = 0; y < n * n; y++) {
-						puzzle[x][y] = new Cell();
-						solution[x][y] = new Cell();
-						current[x][y] = new Cell();
-					}
-				}
+				g.generatePuzzle(n * n, 2);
+				puzzle = g.getPartial(n * n);
+				solution = g.getSolution(n * n);
+				current = g.getPartial(n * n);
+				// for (int x = 0; x < n * n; x++) {
+				// for (int y = 0; y < n * n; y++) {
+				// current[x][y] = new Cell(n * n);
+				// }
+				// }
 			}
 		});
 
@@ -125,30 +124,22 @@ public class Sudoku extends JFrame {
 		buttonList.add(hintButton);
 		buttonList.add(quitButton);
 
-		puzzle = new Cell[n * n][n * n];
-		solution = new Cell[n * n][n * n];
-		current = new Cell[n * n][n * n];
-		for (int x = 0; x < n * n; x++) {
-			for (int y = 0; y < n * n; y++) {
-				puzzle[x][y] = new Cell();
-				solution[x][y] = new Cell();
-				current[x][y] = new Cell();
-			}
-		}
-		s.loadGrid(puzzle, n * n);
-		s.solve();
-		solution = s.getGridCopy();
+		g.generatePuzzle(n * n, 2);
+		puzzle = g.getPartial(n * n);
+		solution = g.getSolution(n * n);
+		current = g.getPartial(n * n);
+		// for (int x = 0; x < n * n; x++) {
+		// for (int y = 0; y < n * n; y++) {
+		// current[x][y] = new Cell(n * n);
+		// }
+		// }
 
-		if (n > 1) {
-			for (int i = 0; i < (n * n) - n; i++) {
-				int spot = (int) (Math.random() * empty.size());
-				int temp = empty.get(spot);
-				empty.remove(spot);
-				int newX = temp / 1000;
-				int newY = temp % 1000;
-				current[newX][newY].value = solution[newX][newY].value;
-			}
-		}
+		/*
+		 * if (n > 1) { for (int i = 0; i < (n * n) - n; i++) { int spot = (int)
+		 * (Math.random() * empty.size()); int temp = empty.get(spot);
+		 * empty.remove(spot); int newX = temp / 1000; int newY = temp % 1000;
+		 * current[newX][newY].value = solution[newX][newY].value; } }
+		 */
 
 		grid.setLayout(new GridLayout(n, n, 10, 10));
 
@@ -170,7 +161,7 @@ public class Sudoku extends JFrame {
 							int temp = Integer.parseInt(square.getText());
 							square.setText("" + temp);
 							current[fx][fy].value = temp;
-							boolean valid = v.validate(current);
+							boolean valid = v.validate(current, n * n);
 							if (valid) {
 								JOptionPane.showConfirmDialog(null,
 										"Congragulations! \n You completed a "
@@ -222,11 +213,7 @@ public class Sudoku extends JFrame {
 
 	}
 
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				Sudoku gui = new Sudoku();

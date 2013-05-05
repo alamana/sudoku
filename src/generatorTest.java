@@ -6,16 +6,18 @@ public class generatorTest {
 		Solver s = new Solver();
 		Validator v = new Validator();
 		Generator gen = new Generator();
-		
+
+		int N = 4;
 		System.out.println("Generating...");
-		Cell[][] puzz = gen.getPuzzle(4, 3);
-		System.out.println(v.validate(puzz, 4));
+		gen.generatePuzzle(N, 3);
+		Cell[][] puzz = gen.getPartial(N);
+		System.out.println(v.validate(puzz, N));
 		System.out.println("---------");
-		s.loadGrid(puzz, 4);
+		s.loadGrid(puzz, N);
 		s.print();
 		s.solve();
 		s.print();
-		
+
 	}
 
 }
