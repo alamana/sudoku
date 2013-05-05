@@ -13,7 +13,8 @@ public class Cell {
 	public int N;
 
 	/**
-	 * True in the ith spot means that this cell could have a value of i+1.
+	 * True in spot <code>i</code> means that this cell could have a value of
+	 * <code>i+1</code>.
 	 */
 	public boolean possibles[];
 
@@ -23,17 +24,17 @@ public class Cell {
 	public int size;
 
 	/**
-	 * Cell's value. 0 means unassigned.
+	 * Cell's value. <code>0</code> means unassigned.
 	 */
 	public int value;
 
 	/**
-	 * Unique. Defined as 100*row + column.
+	 * Unique. Defined as <code>100*row + column</code>.
 	 */
 	public int name;
 
 	/**
-	 * True if the cell is empty.
+	 * <code>true</code> if the cell is empty.
 	 */
 	public boolean empty;
 
@@ -42,11 +43,19 @@ public class Cell {
 	 */
 	public ArrayList<Group> groups;
 
+	/**
+	 * @deprecated
+	 */
 	public boolean guessArray[];
 
 	/**
-	 * Initializes the cells' name to 0, empty to true, value to 0, size to N,
-	 * and initializes possibles[]. Sets N to 9.
+	 * Initializes the cells' name to <code>0</code>, empty to <code>true</code>
+	 * , value to <code>0</code>, <code>N</code> to <code>size</code>, and
+	 * initializes <code>possibles[]</code> so that each of its values is
+	 * <code>true</code>.
+	 * 
+	 * @param size
+	 *            Value for <code>N</code>
 	 */
 	Cell(int size) {
 		N = size;
@@ -63,8 +72,8 @@ public class Cell {
 	}
 
 	/**
-	 * Recalculates size on every call. Size is the number the possibilities for
-	 * this cell.
+	 * Recalculates <code>size</code> on every call. <code>size</code> is the
+	 * number the possibilities for this cell.
 	 */
 	public void adjustSize() {
 		size = 0;
@@ -75,7 +84,10 @@ public class Cell {
 	}
 
 	/**
-	 * Meant to be called when there's only 1 possible value for the cell.
+	 * Meant to be called when there's only one possible value for the cell.
+	 * 
+	 * @return <code>true</code> if a value was assigned to this cell,
+	 *         <code>false</code> otherwise.
 	 */
 	public boolean fill() {
 		if (size != 1) {
@@ -115,6 +127,9 @@ public class Cell {
 			groups.get(j).addValue(n);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public int guessArrayFill() {
 		int ret = 0;
 		for (boolean b : guessArray) {
@@ -125,8 +140,10 @@ public class Cell {
 	}
 
 	/**
-	 * Returns a guess value using the first nonzero value in possibles[].
-	 * Returns -1 if no nonzero value is found.
+	 * Guesses a value using the first nonzero value in <code>possibles[]</code>
+	 * 
+	 * @return First nonzero value in <code>possibles[]</code>. <code>-1</code>
+	 *         if no nonzero value is found.
 	 */
 	public int getGuess() {
 		for (int i = 0; i < possibles.length; i++) {
@@ -139,8 +156,10 @@ public class Cell {
 
 	/**
 	 * Looks the value each group this cell belongs to contains and removes any
-	 * values found in that group. Returns true if a change was made. False
-	 * otherwise.
+	 * values found in that group.
+	 * 
+	 * @return <code>true</code> if a change was made. <code>false</code>
+	 *         otherwise.
 	 */
 	public boolean removePossibles() {
 		boolean ret = false;
@@ -149,13 +168,20 @@ public class Cell {
 			for (int i = 0; i < list.length; i++) {
 				if (list[i]) {
 					ret = true;
-					this.removePossible(i + 1);
+					//this.removePossible(i + 1);
 				}
 			}
 		}
 		return ret;
 	}
 
+	/**
+	 * Checks to see if a cell value is contained an any of this cell's groups.
+	 * 
+	 * @param n
+	 *            Value to check
+	 * @return True if none of the groups contain this value, false otherwise.
+	 */
 	public boolean validValue(int n) {
 		for (Group g : groups) {
 			if (!g.valid(n))
@@ -251,8 +277,8 @@ public class Cell {
 	}
 
 	/**
-	 * Sets each possibility to true. Name, value, and size become 0. Empty
-	 * becomes true.
+	 * Sets each possibility to true. Name, value, and size become
+	 * <code>0</code>. Empty becomes <code>true</code>.
 	 */
 	public void reset() {
 		resetPossibles();
@@ -262,7 +288,7 @@ public class Cell {
 	}
 
 	/**
-	 * Resets this cell. Has it's groups recalculate values.
+	 * Resets this cell. Has its groups recalculate values.
 	 */
 	public void unassign() {
 		int x = value;
