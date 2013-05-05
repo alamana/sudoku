@@ -11,7 +11,10 @@ public class test {
 	 */
 	public static void main(String[] args) {
 		Solver solver = new Solver();
-		solver.loadGrid("testFiles/unsolvable", 9);
+		solver.loadGrid("testFiles/break1", 9);
+		System.out.println("Initial board: ");
+		solver.print();
+		System.out.println("=========");
 		solver.solve();
 		System.out.println("=========");
 		System.out.println("");

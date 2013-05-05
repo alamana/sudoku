@@ -53,7 +53,7 @@ public class Generator {
 			g.name = "row" + i;
 			for (int j = 0; j < N; j++) { // add each cell in the row to the
 											// group
-				g.add(ret[i][j]);
+				g.addCell(ret[i][j]);
 				ret[i][j].groups.add(g);
 			}
 			groups.add(g);
@@ -65,7 +65,7 @@ public class Generator {
 			g.type = "col";
 			g.name = "col" + j;
 			for (int i = 0; i < N; i++) {
-				g.add(ret[i][j]);
+				g.addCell(ret[i][j]);
 				ret[i][j].groups.add(g);
 			}
 			groups.add(g);
@@ -81,7 +81,7 @@ public class Generator {
 			for (int i = 1; i <= (int) Math.sqrt(N); i++) {
 				col = (int) Math.sqrt(N) * (z % (int) Math.sqrt(N));
 				for (int j = 1; j <= (int) Math.sqrt(N); j++) {
-					g.add(ret[row][col]);
+					g.addCell(ret[row][col]);
 					ret[row][col].groups.add(g);
 					col++;
 				}
@@ -97,9 +97,11 @@ public class Generator {
 		Random rand = new Random();
 
 		for (Group g : groups) {
-			while (g.size() < 3) {
-				int randVal = rand.nextInt(N);
-				randVal++; // rand returns between [0,N)
+			if (debug)
+				System.out.println("Entering < 3");
+			while (g.groupSize() < 3) {
+				int randVal = rand.nextInt(N); // returns between [0,N)
+				randVal++; // shifts to [1,N]
 
 				int randIndex = rand.nextInt(N);
 				Cell randCell = g.get(randIndex);
@@ -109,9 +111,11 @@ public class Generator {
 				 */
 				if (debug)
 					System.out.println(randVal);
-				while (!g.valid(randVal)) {
+				int counter = 0;
+				while (!randCell.validValue(randVal) && counter < 9) {
 					randVal = (randVal + 1) % N;
 					randVal++;
+					counter++;
 					if (debug)
 						System.out.println("Inside Loop: " + randVal);
 				}
@@ -125,7 +129,9 @@ public class Generator {
 
 		if (difficulty <= 2) {
 			for (Group g : groups) {
-				while (g.size() < 4) {
+				if (debug)
+					System.out.println("Entering < 4");
+				while (g.groupSize() < 4) {
 					int randVal = rand.nextInt(N);
 					randVal++; // rand returns between [0,N)
 
@@ -135,9 +141,11 @@ public class Generator {
 					/*
 					 * Increment until we get a good value.
 					 */
-					while (!g.valid(randVal)) {
+					int counter = 0;
+					while (!randCell.validValue(randVal) && counter < 9) {
 						randVal = (randVal + 1) % N;
 						randVal++;
+						counter++;
 					}
 					randCell.assignValue(randVal);
 				}
@@ -151,7 +159,9 @@ public class Generator {
 
 		if (difficulty == 1) {
 			for (Group g : groups) {
-				while (g.size() < 5) {
+				if (debug)
+					System.out.println("Entering < 5");
+				while (g.groupSize() < 5) {
 					int randVal = rand.nextInt(N);
 					randVal++; // rand returns between [0,N)
 
@@ -161,9 +171,11 @@ public class Generator {
 					/*
 					 * Increment until we get a good value.
 					 */
-					while (!g.valid(randVal)) {
+					int counter = 0;
+					while (!randCell.validValue(randVal) && counter < 9) {
 						randVal = (randVal + 1) % N;
 						randVal++;
+						counter++;
 					}
 					randCell.assignValue(randVal);
 				}

@@ -7,7 +7,6 @@ import java.util.ArrayList;
  * @author alamana
  */
 public class Cell {
-
 	/**
 	 * Max number of possible choices for this cell.
 	 */
@@ -43,12 +42,15 @@ public class Cell {
 	 */
 	public ArrayList<Group> groups;
 
+	public boolean guessArray[];
+
 	/**
 	 * Initializes the cells' name to 0, empty to true, value to 0, size to N,
 	 * and initializes possibles[]. Sets N to 9.
 	 */
 	Cell() {
 		N = 9;
+		guessArray = new boolean[N];
 		name = 0;
 		empty = true;
 		value = 0;
@@ -101,11 +103,21 @@ public class Cell {
 	 *            The value to be assigned to this cell.
 	 */
 	public void assignValue(int n) {
+		guessArray[n - 1] = true;
 		value = n;
 		size = 0;
 		empty = false;
 		for (int j = 0; j < groups.size(); j++)
 			groups.get(j).addValue(n);
+	}
+
+	public int guessArrayFill() {
+		int ret = 0;
+		for (boolean b : guessArray) {
+			if (b)
+				ret++;
+		}
+		return ret;
 	}
 
 	/**
@@ -128,16 +140,27 @@ public class Cell {
 	 */
 	public boolean removePossibles() {
 		boolean ret = false;
-		for (Group g : groups) {
-			boolean list[] = g.groupVals;
-			for (int i = 0; i < list.length; i++) {
-				if (list[i]) {
-					ret = true;
-					this.removePossible(i + 1);
+		if (empty) {
+			for (Group g : groups) {
+				boolean list[] = g.groupVals;
+				for (int i = 0; i < list.length; i++) {
+					if (list[i]) {
+						ret = true;
+						this.removePossible(i + 1);
+					}
 				}
 			}
 		}
 		return ret;
+	}
+
+	public boolean validValue(int n) {
+		for (Group g : groups) {
+			if (!g.valid(n))
+				return false;
+		}
+
+		return true;
 	}
 
 	/**
@@ -171,7 +194,7 @@ public class Cell {
 
 	@Override
 	public String toString() {
-		String ret = "";
+		String ret = name + "::";
 		ret += value + ":" + size + ":[";
 		for (int i = 0; i < N; i++) {
 			if (i != 0)
@@ -230,9 +253,8 @@ public class Cell {
 	 */
 	public void reset() {
 		resetPossibles();
-		name = 0;
 		value = 0;
-		size = 0;
+		size = 9;
 		empty = true;
 	}
 }

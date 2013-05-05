@@ -6,12 +6,11 @@ import java.util.ArrayList;
  * 
  * @author sjboris
  * @author alamana
- * @version %I%, %G%
  */
 public class Group extends ArrayList<Cell> {
 
 	/**
-	 * Number of values this group can hold.
+	 * Number of values this group can hold.Size
 	 */
 	public int N;
 
@@ -45,7 +44,7 @@ public class Group extends ArrayList<Cell> {
 	/**
 	 * Counts the number of true values in groupVals
 	 */
-	public int size() {
+	public int groupSize() {
 		int ret = 0;
 		for (boolean b : groupVals) {
 			if (b)
@@ -90,11 +89,12 @@ public class Group extends ArrayList<Cell> {
 	 *            Cell to be added
 	 * @return true
 	 */
-	public boolean add(Cell c) {
+	public boolean addCell(Cell c) {
+		this.add(c);
 		boolean status = this.addValue(c.value);
-		if (!status && c.value > 0)
+		if (!status && c.value > 0) {
 			System.out.println("Group.add: invalid add with cell " + c.name);
-		super.add(c);
+		}
 		return true;
 	}
 
@@ -105,13 +105,13 @@ public class Group extends ArrayList<Cell> {
 	 *            Cell to be removed from this group.
 	 * @return Always returns true.
 	 */
-	public boolean remove(Cell c) {
-		boolean status = this.removeValue(c.value);
-		if (!status)
-			System.out.println("Group.add: invalid remove");
-		super.remove(c);
-		return true;
-	}
+	// public boolean remove(Cell c) {
+	// boolean status = this.removeValue(c.value);
+	// if (!status)
+	// System.out.println("Group.add: invalid remove");
+	// super.remove(c);
+	// return true;
+	// }
 
 	/**
 	 * Sets all of the group's values to false.
