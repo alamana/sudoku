@@ -7,11 +7,11 @@ public class generatorTest {
 		Validator v = new Validator();
 		Generator gen = new Generator();
 
-		Solver.setDebug(true);
+		Solver.setDebug(false);
 		Solver.setCounter(false, 35);
 		Solver.setLogic(true);
 		
-		int N = 16;
+		int N = 9;
 		System.out.println("Generating...");
 		long startTime = System.nanoTime();
 		gen.generatePuzzle(N, 1);
