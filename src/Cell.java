@@ -257,4 +257,16 @@ public class Cell {
 		size = 9;
 		empty = true;
 	}
+
+	/**
+	 *	Resets this cell. Has it's groups recalculate values. 
+	 */
+	public void unassign() {
+		int x = value;
+		reset();
+		for (Group g : groups){
+			g.removeValue(x);
+		}
+		
+	}
 }

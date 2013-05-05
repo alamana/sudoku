@@ -1,3 +1,8 @@
+/Cell.class
+/Generator.class
+/Group.class
+/Move.class
+/Solver.class
 /Sudoku$1.class
 /Sudoku$2.class
 /Sudoku$3.class
@@ -5,7 +10,6 @@
 /Sudoku$5.class
 /Sudoku$6.class
 /Sudoku.class
-/Possibility.class
-/Snapshot.class
-/Generator.class
+/Validator.class
 /generatorTest.class
+/test.class

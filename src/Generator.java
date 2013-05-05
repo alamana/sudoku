@@ -12,7 +12,7 @@ import java.util.Random;
  */
 public class Generator {
 
-	private static boolean debug = false;
+	private static boolean debug = true;
 
 	private Solver s;
 	private Validator v;
@@ -22,47 +22,22 @@ public class Generator {
 		v = new Validator();
 	}
 
-	public Cell[][] getSolvable(int N, int difficulty) {
-		System.out.println("Entering getSolvable");
-		Cell[][] potential = getValid(N, difficulty);
-
-		try {
-			s.loadGrid(potential, N);
-			s.solve();
-		} catch (Exception e) {
-			potential = getSolvable(N, difficulty);
-		}
-
-		return potential;
-	}
-
-	public Cell[][] getValid(int N, int difficulty) {
-		Cell[][] potential = generatePuzzle(N, difficulty);
-		while (!v.validate(potential)) {
-			potential = generatePuzzle(N, difficulty);
-		}
-		return potential;
-	}
-
 	/**
-	 * Works on the assumption that puzzles with more blanks are harder to
-	 * solve. Difficult of one means that
+	 * Used to set up the objects needed to create a puzzle.
 	 * 
+	 * @param grid
+	 *            Array to initialize
+	 * @param groups
+	 *            List holding groups for the grid
 	 * @param N
-	 *            Number of cells in one edge of the grid
-	 * @param difficulty
-	 *            1=easy, 2=medium, 3=hard
-	 * @return NxN array
+	 *            Number of cells on a side
 	 */
-	public Cell[][] generatePuzzle(int N, int difficulty) {
-		Cell[][] ret = new Cell[N][N];
-		ArrayList<Group> groups = new ArrayList<Group>();
-
-		// initialize grid
+	public void initialize(Cell[][] grid, ArrayList<Group> groups, int N) {
+		// initialize cells
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				ret[i][j] = new Cell();
-				ret[i][j].name = i * 100 + j;
+				grid[i][j] = new Cell();
+				grid[i][j].name = i * 100 + j;
 			}
 		}
 
@@ -75,8 +50,8 @@ public class Generator {
 			g.name = "row" + i;
 			for (int j = 0; j < N; j++) { // add each cell in the row to the
 											// group
-				g.addCell(ret[i][j]);
-				ret[i][j].groups.add(g);
+				g.addCell(grid[i][j]);
+				grid[i][j].groups.add(g);
 			}
 			groups.add(g);
 		}
@@ -87,8 +62,8 @@ public class Generator {
 			g.type = "col";
 			g.name = "col" + j;
 			for (int i = 0; i < N; i++) {
-				g.addCell(ret[i][j]);
-				ret[i][j].groups.add(g);
+				g.addCell(grid[i][j]);
+				grid[i][j].groups.add(g);
 			}
 			groups.add(g);
 		}
@@ -103,124 +78,113 @@ public class Generator {
 			for (int i = 1; i <= (int) Math.sqrt(N); i++) {
 				col = (int) Math.sqrt(N) * (z % (int) Math.sqrt(N));
 				for (int j = 1; j <= (int) Math.sqrt(N); j++) {
-					g.addCell(ret[row][col]);
-					ret[row][col].groups.add(g);
+					g.addCell(grid[row][col]);
+					grid[row][col].groups.add(g);
 					col++;
 				}
 				row++;
 			}
 			groups.add(g);
 		}
+	}
 
-		/*
-		 * Make each group have three values.
-		 */
+	/**
+	 * Returns a partially completed Sudoku board. If the difficulty is 1, each
+	 * row will have five filled in values. If the difficulty is 2, each row
+	 * will have four filled in values. If the difficulty is 3, each row will
+	 * have three filled in values.
+	 * 
+	 * @param N
+	 *            Number of cells on a side of the board.
+	 * @param difficulty
+	 *            1 is the easiest, 3 is the hardest
+	 */
+	public Cell[][] getPuzzle(int N, int difficulty) {
+		Cell[][] ret = new Cell[N][N];
+		ArrayList<Group> groups = new ArrayList<Group>();
 
-		Random rand = new Random();
+		initialize(ret, groups, N);
 
-		for (Group g : groups) {
-			if (debug)
-				System.out.println("Entering < 3");
-			while (g.groupSize() < 3) {
-				int randVal = rand.nextInt(N); // returns between [0,N)
-				randVal++; // shifts to [1,N]
+		// give random values to the main diagonal
+		Random r = new Random();
 
-				int randIndex = rand.nextInt(N);
-				Cell randCell = g.get(randIndex);
+		for (int i = 0; i < N; i++) {
+			Cell c = ret[i][i];
 
-				/*
-				 * Increment until we get a good value.
-				 */
-				if (debug)
-					System.out.println(randVal);
-				int counter = 0;
-				while (!randCell.validValue(randVal) && counter < 9) {
-					randVal = (randVal + 1) % N;
-					randVal++;
-					counter++;
-					if (debug)
-						System.out.println("Inside Loop: " + randVal);
-				}
-				if (counter < 9)
-					randCell.assignValue(randVal);
+			int randVal = r.nextInt(N) + 1;
+			while (!c.validValue(randVal)) {
+				randVal++; // increment
+				randVal %= N; // prevent from going over
+				randVal++; // prevent randVal from modding to 1
+			}
+
+			c.assignValue(randVal);
+		}
+
+		// solve the board then
+		s.loadGrid(ret, N);
+		s.solve();
+
+		Cell[][] solution = s.getGridCopy();
+		// copy solution to ret
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				Cell r1 = ret[i][j];
+				Cell s = solution[i][j];
+				r1.assignValue(s.value);
 			}
 		}
 
 		/*
-		 * Add one more value if difficulty is 2 or less
+		 * If difficulty is equal to one, reduce the number of values in each
+		 * row to 5
 		 */
-
-		if (difficulty <= 2) {
-			for (Group g : groups) {
-				if (debug)
-					System.out.println("Entering < 4");
-				while (g.groupSize() < 4) {
-					int randVal = rand.nextInt(N);
-					randVal++; // rand returns between [0,N)
-
-					int randIndex = rand.nextInt(N);
-					Cell randCell = g.get(randIndex);
-
-					/*
-					 * Increment until we get a good value.
-					 */
-					int counter = 0;
-					while (!randCell.validValue(randVal) && counter < 9) {
-						randVal = (randVal + 1) % N;
-						randVal++;
-						counter++;
-					}
-					if (counter < 9)
-						randCell.assignValue(randVal);
+		for (int z = N; z > 5; z--) {
+			for (int row = 0; row < N; row++) {
+				int col = r.nextInt(N);
+				Cell c = ret[row][col];
+				while (c.empty) {
+					col++;
+					col = col % 9;
+					c = ret[row][col];
 				}
+				c.unassign();
 			}
-
 		}
 
 		/*
-		 * Add one more additional value if difficulty is 1
+		 * If difficulty is equal to two, reduce the number of values in each
+		 * row to 4.
 		 */
 
-		if (difficulty == 1) {
-			for (Group g : groups) {
-				if (debug)
-					System.out.println("Entering < 5");
-				while (g.groupSize() < 5) {
-					int randVal = rand.nextInt(N);
-					randVal++; // rand returns between [0,N)
-
-					int randIndex = rand.nextInt(N);
-					Cell randCell = g.get(randIndex);
-
-					/*
-					 * Increment until we get a good value.
-					 */
-					int counter = 0;
-					while (!randCell.validValue(randVal) && counter < 9) {
-						randVal = (randVal + 1) % N;
-						randVal++;
-						counter++;
-					}
-					if (counter < 9)
-						randCell.assignValue(randVal);
+		if (difficulty == 2) {
+			for (int row = 0; row < N; row++) {
+				int col = r.nextInt(N);
+				Cell c = ret[row][col];
+				while (c.empty) {
+					col++;
+					col = col % 9;
+					c = ret[row][col];
 				}
+				c.unassign();
 			}
-
 		}
 
 		/*
-		 * Print it out if debugging.
+		 * If difficulty is equal to three, reduce the number of values to 3.
 		 */
-
-		if (debug) {
-			for (int i = 0; i < N; i++) {
-				for (int j = 0; j < N; j++) {
-					System.out.print(ret[i][j].value);
+		if (difficulty == 3) {
+			for (int row = 0; row < N; row++) {
+				int col = r.nextInt(N);
+				Cell c = ret[row][col];
+				while (c.empty) {
+					col++;
+					col = col % 9;
+					c = ret[row][col];
 				}
-				System.out.println("");
+				c.unassign();
 			}
 		}
-
 		return ret;
 	}
 

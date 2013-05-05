@@ -7,8 +7,8 @@ public class generatorTest {
 		Validator v = new Validator();
 		Generator gen = new Generator();
 		
-		
-		Cell[][] puzz = gen.getSolvable(9, 1);
+		System.out.println("Generating...");
+		Cell[][] puzz = gen.getPuzzle(9, 3);
 		System.out.println(v.validate(puzz));
 		System.out.println("---------");
 		s.loadGrid(puzz, 9);
