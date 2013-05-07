@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -17,11 +18,15 @@ public class Sudoku extends JFrame {
 	 * Size of the minor boxes. n^2 is the length of a side of the grid.
 	 */
 	public static int n = 3;
+	
+	public static int difficulty = 2;
 
 	/**
 	 * Main grid to hold cells.
 	 */
 	public static JPanel grid;
+	
+	public static int buttonDim;
 
 	/**
 	 * Cell[][] grid containing the solution/puzzle/current.
@@ -62,6 +67,9 @@ public class Sudoku extends JFrame {
 	public void startUI() {
 		n = Integer.parseInt(JOptionPane
 				.showInputDialog("Input n (standard Sudoku is n=3)"));
+		difficulty = Integer.parseInt(JOptionPane
+				.showInputDialog("Input difficulty\n 1: Easy   2: Medium   3: Hard "));
+		buttonDim = (700 - (n * 10)) / (n * n);
 		panel = new JPanel();
 		getContentPane().add(panel);
 		setTitle("NxN Sudoku");
@@ -87,11 +95,16 @@ public class Sudoku extends JFrame {
 		JButton generateButton = new JButton("Generate");
 		generateButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent event) {
-				grid.setLayout(new GridLayout(n, n, 10, 10));
-				g.generatePuzzle(n * n, 2);
+				// grid.setLayout(new GridLayout(n, n, 10, 10));
+				difficulty = Integer.parseInt(JOptionPane
+						.showInputDialog("Input difficulty\n 1: Easy   2: Medium   3: Hard "));
+				g.generatePuzzle(n * n, difficulty);
+				s.loadGrid(g.getSolution(), n * n);
+				s.print();
 				puzzle = g.getPartial();
 				solution = g.getSolution();
 				current = g.getPartial();
+				fillGrid(buttonDim);	
 			}
 		});
 
@@ -119,9 +132,7 @@ public class Sudoku extends JFrame {
 		buttonList.add(hintButton);
 		buttonList.add(quitButton);
 
-		g.generatePuzzle(n * n, 2);
-		s.loadGrid(g.getSolution(), n * n);
-		s.print();
+		g.generatePuzzle(n * n, difficulty);
 		s.loadGrid(g.getSolution(), n * n);
 		s.print();
 		puzzle = g.getPartial();
@@ -130,7 +141,6 @@ public class Sudoku extends JFrame {
 
 		grid.setLayout(new GridLayout(n, n, 10, 10));
 
-		int buttonDim = (700 - (n * 10)) / (n * n);
 		System.out.println(buttonDim);
 		subgrid = new JPanel[n][n];
 
@@ -165,43 +175,27 @@ public class Sudoku extends JFrame {
 					}
 				}
 				grid.add(subgrid[ix][iy]);
-				System.out.println("worked " + ix + " " + iy);
 				panel.add(grid, BorderLayout.CENTER);
 			}
 		}
 	}
 
-	/*
-	 * Does nothing right now
-	 */
-	public void fillGrid(int buttonDim) {
-		/*subgrid = new JPanel[n * n];
 
-		for (int i = 0; i < n * n; i++) {
-			subgrid[i] = new JPanel();
-			subgrid[i].setLayout(new GridLayout(n, n));
-			for (int x = 0; x < n; x++) {
-				for (int y = 0; y < n; y++) {
-					final int fx = 3 * ((i) % 3) + x;
-					final int fy = 3 * ((i) / 3) + y;
-					final JButton button = new JButton(""
-							+ current[fx][fy].value);
-					button.setSize(buttonDim, buttonDim);
-					button.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent event) {
-							int temp = Integer.parseInt(JOptionPane
-									.showInputDialog("Enter new value"));
-							button.setText("" + temp);
-							current[fx][fy].value = temp;
-						}
-					});
-					subgrid[i].add(button);
+	public void fillGrid(int buttonDim) {
+		for (int ix = 0; ix < n; ix++) {
+			for (int iy = 0; iy < n; iy++) {
+				for (int x = 0; x < n; x++) {
+					for (int y = 0; y < n; y++) {
+						int fx = n * ix + x;
+						int fy = n * iy + y;
+						int i = y + x*n;
+						((JTextComponent) subgrid[ix][iy].getComponent(i)).setText("" + current[fx][fy].value);
+					}
+
 				}
 			}
-			grid.add(subgrid[i]);
-			System.out.println("worked " + i);
 		}
-	*/
+
 	}
 
 	public static void main(String[] args) {
