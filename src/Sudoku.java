@@ -50,7 +50,7 @@ public class Sudoku extends JFrame {
 
 	public static ArrayList<Integer> empty;
 	public static JPanel panel;
-	public static JPanel[] subgrid;
+	public static JPanel[][] subgrid;
 
 	public Sudoku() {
 		v = new Validator();
@@ -103,8 +103,8 @@ public class Sudoku extends JFrame {
 				empty.remove(spot);
 				int newX = temp / 1000;
 				int newY = temp % 1000;
-				JOptionPane.showMessageDialog(null, "Spot (" + newX + ","
-						+ newY + ") should be " + solution[newX][newY].value);
+				JOptionPane.showMessageDialog(null, "Spot (" + newY + ","
+						+ newX + ") should be " + solution[newX][newY].value);
 			}
 		});
 
@@ -120,9 +120,9 @@ public class Sudoku extends JFrame {
 		buttonList.add(quitButton);
 
 		g.generatePuzzle(n * n, 2);
-		s.loadGrid(g.getSolution(), n*n);
+		s.loadGrid(g.getSolution(), n * n);
 		s.print();
-		s.loadGrid(g.getSolution(), n*n);
+		s.loadGrid(g.getSolution(), n * n);
 		s.print();
 		puzzle = g.getPartial();
 		solution = g.getSolution();
@@ -132,38 +132,42 @@ public class Sudoku extends JFrame {
 
 		int buttonDim = (700 - (n * 10)) / (n * n);
 		System.out.println(buttonDim);
-		subgrid = new JPanel[n * n];
+		subgrid = new JPanel[n][n];
 
-		for (int i = 0; i < n * n; i++) {
-			subgrid[i] = new JPanel();
-			subgrid[i].setLayout(new GridLayout(n, n));
-			for (int x = 0; x < n; x++) {
-				for (int y = 0; y < n; y++) {
-					final int fx = n * ((i) % n) + x;
-					final int fy = n * ((i) / n) + y;
-					final JTextField square = new JTextField(""
-							+ current[fx][fy].value);
-					square.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent event) {
-							int temp = Integer.parseInt(square.getText());
-							square.setText("" + temp);
-							current[fx][fy].value = temp;
-							boolean valid = v.validate(current, n * n);
-							if (valid) {
-								JOptionPane.showConfirmDialog(null,
-										"Congragulations! \n You completed a "
-												+ n * n + " sudoku puzzle!");
+		for (int ix = 0; ix < n; ix++) {
+			for (int iy = 0; iy < n; iy++) {
+				subgrid[ix][iy] = new JPanel();
+				subgrid[ix][iy].setLayout(new GridLayout(n, n));
+				for (int x = 0; x < n; x++) {
+					for (int y = 0; y < n; y++) {
+						final int fx = n * ix + x;
+						final int fy = n * iy + y;
+						final JTextField square = new JTextField(""
+								+ current[fx][fy].value);
+						square.addActionListener(new ActionListener() {
+							public void actionPerformed(ActionEvent event) {
+								int temp = Integer.parseInt(square.getText());
+								square.setText("" + temp);
+								current[fx][fy].value = temp;
+								boolean valid = v.validate(current, n * n);
+								if (valid) {
+									JOptionPane
+											.showMessageDialog(null,
+													"Congragulations! \n You completed a "
+															+ n * n
+															+ " sudoku puzzle!");
+								}
 							}
-						}
-					});
-					// System.out.println(button.getWidth() + " " +
-					// button.getHeight());
-					subgrid[i].add(square);
+						});
+						// System.out.println(button.getWidth() + " " +
+						// button.getHeight());
+						subgrid[ix][iy].add(square);
+					}
 				}
+				grid.add(subgrid[ix][iy]);
+				System.out.println("worked " + ix + " " + iy);
+				panel.add(grid, BorderLayout.CENTER);
 			}
-			grid.add(subgrid[i]);
-			System.out.println("worked " + i);
-			panel.add(grid, BorderLayout.CENTER);
 		}
 	}
 
@@ -171,7 +175,7 @@ public class Sudoku extends JFrame {
 	 * Does nothing right now
 	 */
 	public void fillGrid(int buttonDim) {
-		subgrid = new JPanel[n * n];
+		/*subgrid = new JPanel[n * n];
 
 		for (int i = 0; i < n * n; i++) {
 			subgrid[i] = new JPanel();
@@ -197,7 +201,7 @@ public class Sudoku extends JFrame {
 			grid.add(subgrid[i]);
 			System.out.println("worked " + i);
 		}
-
+	*/
 	}
 
 	public static void main(String[] args) {
