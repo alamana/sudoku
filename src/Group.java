@@ -177,7 +177,7 @@ public class Group extends ArrayList<Cell> {
 				}
 			} else {
 				System.out
-						.println("Group.removeValue: GROUP DID NOT CONTAIN THIS VALUE");
+						.println("Group.removeValue: GROUP DID NOT CONTAIN VALUE " + n);
 			}
 		}
 		return ret;

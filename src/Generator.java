@@ -147,6 +147,8 @@ public class Generator {
 		puzzle = new Cell[N][N];
 		solution = new Cell[N][N];
 		ArrayList<Group> groups = new ArrayList<Group>();
+		Random r = new Random();
+		int sqrt = (int) Math.sqrt(N);
 
 		initialize(puzzle, groups, N);
 
@@ -155,11 +157,47 @@ public class Generator {
 
 		s.solve();
 
+		System.out.println("Done solving...");
+		
 		solution = s.getGridCopy();
 
-		printSolution();
-		System.out.println("Exchanging columns in section 0.");
-		exchangeSolutionColumns(0);
+		System.out.println("Performing transformations...");
+		
+		int section = 0;
+		int rot = 0;
+		// apply 15 random transformations
+		for (int i = 0; i < 10 * sqrt; i++) {
+			int transformation = r.nextInt(3);
+			switch (transformation) {
+			case 0: // rotate a random number of times
+				rot = r.nextInt(3);
+				for (int j = 0; j < rot; j++) {
+					rotateSolution();
+				}
+				break;
+			case 1: // reflect
+				reflectSolution();
+				break;
+			case 2: // swap a random section
+				section = r.nextInt(sqrt);
+				exchangeSolutionColumns(section);
+				break;
+			case 3:
+				section = r.nextInt(sqrt);
+				exchangeSolutionColumns(section);
+				break;
+			case 4: // rotate 90 or 270 only
+				rot = r.nextInt(2);
+				rot++;
+				if (rot == 2)
+					rot = 3;
+				for (int j = 0; j < rot; j++) {
+					rotateSolution();
+				}
+				break;
+			}
+		}
+
 		printSolution();
 
 		// copy solution to ret
@@ -175,8 +213,6 @@ public class Generator {
 		 * If difficulty is equal to one, reduce the number of values in each
 		 * row to ceiling(N/2)
 		 */
-		Random r = new Random();
-
 		int M = 1 + N / 2;
 		for (int z = N; z > M; z--) {
 			for (int row = 0; row < N; row++) {
@@ -195,7 +231,6 @@ public class Generator {
 		 * If difficulty is equal to two, reduce the number of values in each
 		 * row to sqrt(N).
 		 */
-		int sqrt = (int) Math.sqrt(N);
 		int diff = M - sqrt;
 		if (difficulty >= 2) {
 			for (int i = 0; i < diff; i++) {
@@ -238,24 +273,24 @@ public class Generator {
 
 		int low = sqrt * section;
 		int high = low + sqrt - 1;
+		int diff = high - low;
 
 		if (low < N && high < N) {
 			// get a random value between [low, high]
 			Random r = new Random();
-			int col1 = r.nextInt(high + 1);
+			int col1 = r.nextInt(diff + 1);
 
 			// get another
-			int col2 = r.nextInt(high + 1);
+			int col2 = r.nextInt(diff + 1);
 			if (col2 == col1) {
 				col2 += 1;
-				col2 = col2 % high;
+				col2 = col2 % (diff + 1);
 			}
-
+			// System.out.println("section=" + section + "\tcol1=" + col1
+			// + "\tcol2=" + col2);
 			col1 += low;
 			col2 += low;
-
-			System.out.println("Swapping " + col1 + " and " + col2);
-
+			// System.out.println("\t\tcol1=" + col1 + "\tcol2=" + col2);
 			for (int i = 0; i < N; i++) {
 				Cell c1 = solution[i][col1];
 				Cell c2 = solution[i][col2];
@@ -308,11 +343,6 @@ public class Generator {
 
 				to.unassign();
 				to.assignValue(from.value);
-				//
-				// to.row = j;
-				// to.col = N - i - 1;
-				//
-				// to.name = j * shift + N - i - 1;
 			}
 		}
 	}

@@ -11,7 +11,7 @@ public class generatorTest {
 		Solver.setCounter(false, 35);
 		Solver.setLogic(true);
 		
-		int N = 9;
+		int N = 16;
 		System.out.println("Generating...");
 		long startTime = System.nanoTime();
 		gen.generatePuzzle(N, 1);
@@ -37,6 +37,8 @@ public class generatorTest {
 			}
 			System.out.println("");
 		}
+		
+		System.out.println(v.validate(s.grid, N));
 
 	}
 
