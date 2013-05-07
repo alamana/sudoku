@@ -158,10 +158,8 @@ public class Generator {
 		solution = s.getGridCopy();
 
 		printSolution();
-		System.out.println("Reflecting across x-axis.");
-		reflectSolution();
-//		System.out.println("Rotating...");
-//		rotateSolution();
+		System.out.println("Exchanging columns in section 0.");
+		exchangeSolutionColumns(0);
 		printSolution();
 
 		// copy solution to ret
@@ -233,6 +231,49 @@ public class Generator {
 	}
 
 	/**
+	 * Permutes two random columns in a section.
+	 */
+	public void exchangeSolutionColumns(int section) {
+		int sqrt = (int) Math.sqrt(N);
+
+		int low = sqrt * section;
+		int high = low + sqrt - 1;
+
+		if (low < N && high < N) {
+			// get a random value between [low, high]
+			Random r = new Random();
+			int col1 = r.nextInt(high + 1);
+
+			// get another
+			int col2 = r.nextInt(high + 1);
+			if (col2 == col1) {
+				col2 += 1;
+				col2 = col2 % high;
+			}
+
+			col1 += low;
+			col2 += low;
+
+			System.out.println("Swapping " + col1 + " and " + col2);
+
+			for (int i = 0; i < N; i++) {
+				Cell c1 = solution[i][col1];
+				Cell c2 = solution[i][col2];
+
+				int val1 = c1.value;
+				int val2 = c2.value;
+
+				c1.unassign();
+				c1.assignValue(val2);
+
+				c2.unassign();
+				c2.assignValue(val1);
+			}
+		}
+
+	}
+
+	/**
 	 * Reflects the solution across the x-axis.
 	 */
 	public void reflectSolution() {
@@ -267,11 +308,11 @@ public class Generator {
 
 				to.unassign();
 				to.assignValue(from.value);
-//
-//				to.row = j;
-//				to.col = N - i - 1;
-//
-//				to.name = j * shift + N - i - 1;
+				//
+				// to.row = j;
+				// to.col = N - i - 1;
+				//
+				// to.name = j * shift + N - i - 1;
 			}
 		}
 	}
