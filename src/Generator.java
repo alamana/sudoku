@@ -15,6 +15,8 @@ public class Generator {
 	private Solver s;
 	private Validator v;
 
+	private static int N;
+
 	public Cell[][] puzzle;
 	public Cell[][] solution;
 
@@ -35,7 +37,9 @@ public class Generator {
 	 * @param N
 	 *            Number of cells on a side
 	 */
-	public void initialize(Cell[][] grid, ArrayList<Group> groups, int N) {
+	public void initialize(Cell[][] grid, ArrayList<Group> groups, int size) {
+		Generator.N = size;
+
 		// initialize cells
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
@@ -97,7 +101,7 @@ public class Generator {
 	 *            of cells on a side
 	 * @return A deep copy of completed puzzle
 	 */
-	public Cell[][] getSolution(int N) {
+	public Cell[][] getSolution() {
 		Cell[][] ret = new Cell[N][N];
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
@@ -115,7 +119,7 @@ public class Generator {
 	 *            of cells on a side
 	 * @return A deep copy of partially completed puzzle
 	 */
-	public Cell[][] getPartial(int N) {
+	public Cell[][] getPartial() {
 		Cell[][] ret = new Cell[N][N];
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
@@ -146,104 +150,18 @@ public class Generator {
 
 		initialize(puzzle, groups, N);
 
-		// give random values to the main diagonal
-		Random r = new Random();
-
-		// if (N <= 9) {
-		for (int i = 0; i < N; i++) {
-			Cell c = puzzle[i][i];
-
-			int randVal = r.nextInt(N) + 1;
-			boolean broke = false;
-			int counter = 0;
-			while (!c.validValue(randVal) && counter < 10) {
-				randVal++; // increment
-				randVal %= N; // prevent from going over
-				randVal++; // prevent randVal from modding to 1
-				counter++;
-				if (counter == 10)
-					broke = true;
-			}
-			if (broke)
-				System.out.println("GENERATOR CONFLICT");
-			c.assignValue(randVal);
-		}
-
-		// give a random value to the other diagonal
-		// for (int i = 0; i < N; i++) {
-		// Cell c = puzzle[i][N - i - 1];
-		//
-		// int randVal = r.nextInt(N) + 1;
-		// boolean broke = false;
-		// int counter = 0;
-		// while (!c.validValue(randVal) && counter < 10) {
-		// randVal++; // increment
-		// randVal %= N; // prevent from going over
-		// randVal++; // prevent randVal from modding to 1
-		// counter++;
-		// if (counter == 10)
-		// broke = true;
-		// }
-		// if (broke)
-		// System.out.println("GENERATOR CONFLICT");
-		//
-		// c.assignValue(randVal);
-		// }
-		// } else {
-		// // do one side
-		// for (int j = 0; j < N; j += 3) {
-		// for (int i = 0; i + j < N; i++) {
-		// Cell c = puzzle[j + i][i];
-		//
-		// int randVal = r.nextInt(N) + 1;
-		// boolean broke = false;
-		// int counter = 0;
-		// while (!c.validValue(randVal) && counter < 10) {
-		// randVal++; // increment
-		// randVal %= N; // prevent from going over
-		// randVal++; // prevent randVal from modding to 1
-		// counter++;
-		// if (counter == 10)
-		// broke = true;
-		// }
-		// if (broke)
-		// System.out.println("GENERATOR CONFLICT");
-		// c.assignValue(randVal);
-		// }
-		// }
-		//
-		// // do the other
-		// for (int j = 3; j < N; j += 3) {
-		// for (int i = 0; i + j < N; i++) {
-		// Cell c = puzzle[i][j + i];
-		//
-		// int randVal = r.nextInt(N) + 1;
-		// boolean broke = false;
-		// int counter = 0;
-		// while (!c.validValue(randVal) && counter < 10) {
-		// randVal++; // increment
-		// randVal %= N; // prevent from going over
-		// randVal++; // prevent randVal from modding to 1
-		// counter++;
-		// if (counter == 10)
-		// broke = true;
-		// }
-		// if (broke)
-		// System.out.println("GENERATOR CONFLICT");
-		// c.assignValue(randVal);
-		// }
-		// }
-		// }
-
-		// solve the board then
+		// solve a blank board
 		s.loadGrid(puzzle, N);
 
-		System.out.println("Came up with: ");
-		s.print();
-
-		System.out.println(s.solve());
+		s.solve();
 
 		solution = s.getGridCopy();
+
+		printSolution();
+		System.out.println("Reflecting across diagonal.");
+		reflectSolution();
+		printSolution();
+
 		// copy solution to ret
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
@@ -257,6 +175,8 @@ public class Generator {
 		 * If difficulty is equal to one, reduce the number of values in each
 		 * row to ceiling(N/2)
 		 */
+		Random r = new Random();
+
 		int M = 1 + N / 2;
 		for (int z = N; z > M; z--) {
 			for (int row = 0; row < N; row++) {
@@ -307,6 +227,53 @@ public class Generator {
 				}
 				c.unassign();
 			}
+		}
+	}
+
+	/**
+	 * Reflects the solution across the y-axis.
+	 */
+	public void reflectSolution() {
+		int shift = (int) Math.pow(10, (int) Math.floor(Math.log10(N)));
+
+		Cell[][] temp = this.getSolution();
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+
+			}
+		}
+	}
+
+	/**
+	 * Rotates the solution by 90 degrees CW.
+	 */
+	public void rotateSolution() {
+		int shift = (int) Math.pow(10, (int) Math.floor(Math.log10(N)));
+
+		Cell[][] temp = this.getSolution();
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				Cell to = solution[j][N - i - 1];
+				Cell from = temp[i][j];
+
+				to.unassign();
+				to.assignValue(from.value);
+
+				to.row = j;
+				to.col = N - i - 1;
+
+				to.name = j * shift + N - i - 1;
+			}
+		}
+	}
+
+	public void printSolution() {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < N; j++) {
+				Cell c = solution[i][j];
+				System.out.print(c.value + " ");
+			}
+			System.out.println("");
 		}
 	}
 

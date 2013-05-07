@@ -65,7 +65,7 @@ public class Cell {
 		this.col = column;
 		this.row = row;
 
-		int shift = (int) Math.floor(Math.log10(N));
+		int shift = (int) Math.pow(10, (int) Math.floor(Math.log10(N)));
 		this.name = this.row * shift + this.col;
 
 		this.empty = true;

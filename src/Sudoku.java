@@ -89,9 +89,9 @@ public class Sudoku extends JFrame {
 			public void actionPerformed(ActionEvent event) {
 				grid.setLayout(new GridLayout(n, n, 10, 10));
 				g.generatePuzzle(n * n, 2);
-				puzzle = g.getPartial(n * n);
-				solution = g.getSolution(n * n);
-				current = g.getPartial(n * n);
+				puzzle = g.getPartial();
+				solution = g.getSolution();
+				current = g.getPartial();
 			}
 		});
 
@@ -120,9 +120,13 @@ public class Sudoku extends JFrame {
 		buttonList.add(quitButton);
 
 		g.generatePuzzle(n * n, 2);
-		puzzle = g.getPartial(n * n);
-		solution = g.getSolution(n * n);
-		current = g.getPartial(n * n);
+		s.loadGrid(g.getSolution(), n*n);
+		s.print();
+		s.loadGrid(g.getSolution(), n*n);
+		s.print();
+		puzzle = g.getPartial();
+		solution = g.getSolution();
+		current = g.getPartial();
 
 		grid.setLayout(new GridLayout(n, n, 10, 10));
 
