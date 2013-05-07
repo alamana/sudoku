@@ -158,8 +158,10 @@ public class Generator {
 		solution = s.getGridCopy();
 
 		printSolution();
-		System.out.println("Reflecting across diagonal.");
+		System.out.println("Reflecting across x-axis.");
 		reflectSolution();
+//		System.out.println("Rotating...");
+//		rotateSolution();
 		printSolution();
 
 		// copy solution to ret
@@ -231,15 +233,22 @@ public class Generator {
 	}
 
 	/**
-	 * Reflects the solution across the y-axis.
+	 * Reflects the solution across the x-axis.
 	 */
 	public void reflectSolution() {
-		int shift = (int) Math.pow(10, (int) Math.floor(Math.log10(N)));
-
-		Cell[][] temp = this.getSolution();
-		for (int i = 0; i < N; i++) {
+		for (int i = 0; i < N / 2; i++) {
 			for (int j = 0; j < N; j++) {
+				Cell from = solution[i][j];
+				int fromVal = from.value;
 
+				Cell to = solution[N - 1 - i][j];
+				int toVal = to.value;
+
+				from.unassign();
+				from.assignValue(toVal);
+
+				to.unassign();
+				to.assignValue(fromVal);
 			}
 		}
 	}
@@ -258,11 +267,11 @@ public class Generator {
 
 				to.unassign();
 				to.assignValue(from.value);
-
-				to.row = j;
-				to.col = N - i - 1;
-
-				to.name = j * shift + N - i - 1;
+//
+//				to.row = j;
+//				to.col = N - i - 1;
+//
+//				to.name = j * shift + N - i - 1;
 			}
 		}
 	}
