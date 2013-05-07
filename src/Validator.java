@@ -133,4 +133,18 @@ public class Validator {
 		}
 		return true;
 	}
+
+	public boolean isSolved(Cell[][] grid, int size) {
+		if (this.validate(grid, size)) {
+			for (int i = 0; i < size; i++) {
+				for (int j = 0; j < size; j++) {
+					if (grid[i][j].empty) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		return false;
+	}
 }
