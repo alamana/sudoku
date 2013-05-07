@@ -250,8 +250,9 @@ public class Solver extends Stack<String> {
 		Move m = null;
 		m = moveHistory.pop();
 		if (debug) {
-			System.out.println("popped off " + m.row + ", " + m.col + " with value " + m.value
-					+ " and a guess value of " + m.guess);
+			System.out.println("popped off " + m.row + ", " + m.col
+					+ " with value " + m.value + " and a guess value of "
+					+ m.guess);
 		}
 
 		// revert board to state before last guess
@@ -371,7 +372,7 @@ public class Solver extends Stack<String> {
 
 	/**
 	 * Reads in a grid from a file. When reading, only accepts values between 1
-	 * and N as valid cell entries.
+	 * and N as valid cell entries. Numbers should be separated with a space.
 	 * 
 	 * @param file
 	 *            Path to file to read.
@@ -399,16 +400,23 @@ public class Solver extends Stack<String> {
 
 		// read in grid
 		for (int i = 0; i < N; i++) {
+			int col = 0;
 			String line = in.nextLine();
-			for (int j = 0; j < N; j++) {
-				int val = (int) (line.charAt(j) - '0');
+			line = line.trim();
+			line = line.replaceAll(" ", ",");
+			line = line.replaceAll(",,", ",");
+			line = line.replaceAll(",,,", ",");
+			String values[] = line.split(",");
+			for (int j = 0; j < values.length; j++) {
+				int val = Integer.parseInt(values[j]);
 				if (0 < val && val <= N) {
-					grid[i][j].assignValue(val);
+					grid[i][col].assignValue(val);
+				}
+				if (val >= 0) {
+					col++;
 				}
 			}
 		}
-		// save it
-		// saveBoard();
 	}
 
 	/**

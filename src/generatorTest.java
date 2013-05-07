@@ -11,7 +11,7 @@ public class generatorTest {
 		Solver.setCounter(false, 35);
 		Solver.setLogic(true);
 		
-		int N = 9;
+		int N = 16;
 		System.out.println("Generating...");
 		long startTime = System.nanoTime();
 		gen.generatePuzzle(N, 1);
@@ -29,6 +29,14 @@ public class generatorTest {
 		System.out.println("");
 		s.loadGrid(puzz, N);
 		s.print();
+		
+		Cell[][] solution = gen.getSolution(N);
+		for (int i = 0; i < N; i++){
+			for (int j = 0; j < N; j++){
+				System.out.print(solution[i][j].value + " ");
+			}
+			System.out.println("");
+		}
 
 	}
 

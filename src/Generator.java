@@ -149,21 +149,98 @@ public class Generator {
 		// give random values to the main diagonal
 		Random r = new Random();
 
+		// if (N <= 9) {
 		for (int i = 0; i < N; i++) {
 			Cell c = puzzle[i][i];
 
 			int randVal = r.nextInt(N) + 1;
-			while (!c.validValue(randVal)) {
+			boolean broke = false;
+			int counter = 0;
+			while (!c.validValue(randVal) && counter < 10) {
 				randVal++; // increment
 				randVal %= N; // prevent from going over
 				randVal++; // prevent randVal from modding to 1
+				counter++;
+				if (counter == 10)
+					broke = true;
 			}
-
+			if (broke)
+				System.out.println("GENERATOR CONFLICT");
 			c.assignValue(randVal);
 		}
 
+		// give a random value to the other diagonal
+		// for (int i = 0; i < N; i++) {
+		// Cell c = puzzle[i][N - i - 1];
+		//
+		// int randVal = r.nextInt(N) + 1;
+		// boolean broke = false;
+		// int counter = 0;
+		// while (!c.validValue(randVal) && counter < 10) {
+		// randVal++; // increment
+		// randVal %= N; // prevent from going over
+		// randVal++; // prevent randVal from modding to 1
+		// counter++;
+		// if (counter == 10)
+		// broke = true;
+		// }
+		// if (broke)
+		// System.out.println("GENERATOR CONFLICT");
+		//
+		// c.assignValue(randVal);
+		// }
+		// } else {
+		// // do one side
+		// for (int j = 0; j < N; j += 3) {
+		// for (int i = 0; i + j < N; i++) {
+		// Cell c = puzzle[j + i][i];
+		//
+		// int randVal = r.nextInt(N) + 1;
+		// boolean broke = false;
+		// int counter = 0;
+		// while (!c.validValue(randVal) && counter < 10) {
+		// randVal++; // increment
+		// randVal %= N; // prevent from going over
+		// randVal++; // prevent randVal from modding to 1
+		// counter++;
+		// if (counter == 10)
+		// broke = true;
+		// }
+		// if (broke)
+		// System.out.println("GENERATOR CONFLICT");
+		// c.assignValue(randVal);
+		// }
+		// }
+		//
+		// // do the other
+		// for (int j = 3; j < N; j += 3) {
+		// for (int i = 0; i + j < N; i++) {
+		// Cell c = puzzle[i][j + i];
+		//
+		// int randVal = r.nextInt(N) + 1;
+		// boolean broke = false;
+		// int counter = 0;
+		// while (!c.validValue(randVal) && counter < 10) {
+		// randVal++; // increment
+		// randVal %= N; // prevent from going over
+		// randVal++; // prevent randVal from modding to 1
+		// counter++;
+		// if (counter == 10)
+		// broke = true;
+		// }
+		// if (broke)
+		// System.out.println("GENERATOR CONFLICT");
+		// c.assignValue(randVal);
+		// }
+		// }
+		// }
+
 		// solve the board then
 		s.loadGrid(puzzle, N);
+
+		System.out.println("Came up with: ");
+		s.print();
+
 		System.out.println(s.solve());
 
 		solution = s.getGridCopy();

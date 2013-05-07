@@ -144,10 +144,10 @@ public class Group extends ArrayList<Cell> {
 		boolean ret = false;
 		if (n > 0) {
 			ret = groupVals[n - 1];
-			if (!this.valid()) {
-				System.out.println("Group.addValue: "
-						+ "GROUP IS BROKEN. TRYING TO ADD " + n + " to " + name);
-			}
+			// if (!this.valid()) {
+			// System.out.println("Group.addValue: "
+			// + "GROUP IS BROKEN. TRYING TO ADD " + n + " to " + name);
+			// }
 			for (Cell c : this) {
 				c.removePossible(n);
 			}
