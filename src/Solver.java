@@ -61,7 +61,7 @@ public class Solver extends Stack<String> {
 			}
 
 			// make guess
-			Cell c = firstEmptyCell();
+			Cell c = lowestEmptyCell();
 			if (c == null) {
 				return true;
 			}
@@ -124,15 +124,22 @@ public class Solver extends Stack<String> {
 	/**
 	 * Finds the first empty cell.
 	 */
-	public Cell firstEmptyCell() {
+	public Cell lowestEmptyCell() {
+		Cell lowest = null;
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				if (grid[i][j].empty) {
-					return grid[i][j];
+					if (lowest == null) {
+						lowest = grid[i][j];
+					} else {
+						if (lowest.size > grid[i][j].size){
+							lowest = grid[i][j];
+						}
+					}
 				}
 			}
 		}
-		return null;
+		return lowest;
 	}
 
 	/**
